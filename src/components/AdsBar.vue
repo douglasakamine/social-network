@@ -1,8 +1,8 @@
 <template>
             <aside id="sidebar">
-            <img id="polishop" src="../assets/images/polishop.jpg" alt="polishop">
-            <div><h2>Compre Polishop</h2></div>
-            <div><p>Anuncios e propagandas</p></div>
+            <img id="polishop" src="../assets/images/advertising-word-block.jpg" alt="polishop">
+            <div><h2>Advertising here</h2></div>
+            <div><p>Ads</p></div>
             <div><p>Algumas informacoes importantes</p></div>
             <div><p>Outras informacoes importantes</p></div>
 

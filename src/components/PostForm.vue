@@ -1,7 +1,7 @@
 <template>
     <section class="post-form post">
-                <form action="#" method="post">
-                <textarea name="post-text" id="post-text" cols="30" rows="10"
+                <form @submit.prevent="Submit">
+                <textarea v-model="formData.content" name="post-text" id="post-text" cols="30" rows="10"
                 placeholder="Type something..."></textarea>
                 <div>
                 <input type="file" name="post-photo" id="post-photo">
@@ -12,8 +12,31 @@
 </template>
 
 <script>
-export default {
+import { mapActions } from 'vuex'
 
+export default {
+  data () {
+    return {
+      formData: {
+        id: '9',
+        name: 'Douglas Post',
+        content: ''
+      }
+    }
+  },
+  methods: {
+    ...mapActions([
+      'addPost'
+    ]),
+    Submit () {
+      const { id, name, content } = this.formData
+
+      console.log(this.formData)
+      const values = { id, name, content }
+
+      this.addPost(values)
+    }
+  }
 }
 </script>
 

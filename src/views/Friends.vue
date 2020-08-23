@@ -2,9 +2,9 @@
 <section class="friends-page">
     <ul class="friends">
     <li class="friend" v-for="friend in friends" :key="friend.id">
-      <span class="friendPhoto"><img src="../assets/images/Azula.png" alt="friend photo"></span>
+      <span class="friendPhoto"><img :src="require(`../assets/images/` + friend.photo)" alt="friend photo"></span>
       <span class="friendName"><a href="">{{ friend.name }}</a></span>
-      <button class="btn">Add</button>
+      <button @click.prevent="addFriend" class="btn">Add</button>
     </li>
     </ul>
 </section>
@@ -12,13 +12,18 @@
 
 <script>
 // @ is an alias to /src
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 
 export default {
   computed: {
     ...mapGetters({
       friends: 'getFriends'
     })
+  },
+  methods: {
+    ...mapActions([
+      'addFriend'
+    ])
   }
 }
 </script>

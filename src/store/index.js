@@ -7,43 +7,50 @@ export default new Vuex.Store({
   state: {
     name: 'Douglas Akamine',
     profileDescription: 'Brazilian, Work at Self-employed',
-    post: [{
+    posts: [{
       id: '1',
-      name: 'Douglas Teste',
+      name: 'John Snow',
       content: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Repel'
     }],
     friends: [{
       id: '1',
-      name: 'Fulano da Silva',
-      photo: 'Azula.png'
+      name: 'John Snow',
+      photo: 'john.jpeg'
     },
     {
       id: '2',
-      name: 'Ciclano',
-      photo: 'Azula.png'
+      name: 'Luke Skywalker',
+      photo: 'luke.jpeg'
     },
     {
       id: '3',
-      name: 'Fulano da Silva',
-      photo: 'Azula.png'
+      name: 'Rick Grimes',
+      photo: 'rick-grimes.jpg'
     },
     {
       id: '4',
-      name: 'Ciclano',
-      photo: 'Azula.png'
+      name: 'Batman',
+      photo: 'batman.png'
     }]
   },
   getters: {
     getPost (state) {
-      return state.post
+      return state.posts
     },
     getFriends (state) {
       return state.friends
     }
   },
   mutations: {
+    appendPost (state, postItem) {
+      state.posts.push(postItem)
+      console.log(state.posts)
+    }
   },
   actions: {
+    addPost: ({ commit }, postItem) => {
+      commit('appendPost', postItem)
+    }
   },
   modules: {
   }

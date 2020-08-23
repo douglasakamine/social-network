@@ -1,36 +1,9 @@
 <template>
 <section id="feed">
-            <div class="post" v-for="post in posts" :key="post.id">
+            <div class="post" v-for="post in posts.slice().reverse()" :key="post.id">
                 <h2>{{ post.name }}</h2>
                 <p>{{ post.content}}</p>
                     <img id="postPhoto" src="../assets/images/paisagem.jpg" alt="paisagem">
-            </div>
-
-            <div class="post">
-                <h2>Nome da pessoa</h2>
-                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Repel
-                    lendus accusamus quod eveniet saepe nesciunt, voluptatibus tenetur
-                    repudiandae earum in iure eius deleniti velit voluptates nulla
-                    exercitationem quaerat facere aperiam corporis!</p>
-                    <img id="postPhoto" src="../assets/images/paisagem.jpg" alt="paisagem">
-            </div>
-
-            <div class="post">
-                <h2>Nome da pessoa</h2>
-                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Repel
-                    lendus accusamus quod eveniet saepe nesciunt, voluptatibus tenetur
-                    repudiandae earum in iure eius deleniti velit voluptates nulla
-                    exercitationem quaerat facere aperiam corporis!</p>
-                    <img id="postPhoto" src="src/images/paisagem.jpg" alt="paisagem">
-            </div>
-
-            <div class="post">
-                <h2>Nome da pessoa</h2>
-                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Repel
-                    lendus accusamus quod eveniet saepe nesciunt, voluptatibus tenetur
-                    repudiandae earum in iure eius deleniti velit voluptates nulla
-                    exercitationem quaerat facere aperiam corporis!</p>
-                    <img id="postPhoto" src="src/images/paisagem.jpg" alt="paisagem">
             </div>
         </section>
 </template>
