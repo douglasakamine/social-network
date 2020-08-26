@@ -1,4 +1,4 @@
-# social-media
+# Social Network (Vue JS/ HTML / CSS)
 
 ## Project setup
 ```
