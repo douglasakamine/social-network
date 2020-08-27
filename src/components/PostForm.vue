@@ -61,10 +61,16 @@ export default {
 }
 
 .button-post {
-    background-color: darkblue;
-    border-radius: 1em;
     color: white;
     font-size: 15px;
     font-weight: bold;
+    border: none;
+    color: white;
+    background-color: blue;
+    font-size: 16px;
+    padding: 5px;
+    text-align: center;
+    text-decoration: none;
+    margin: 4px;
 }
 </style>

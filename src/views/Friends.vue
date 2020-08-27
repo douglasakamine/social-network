@@ -77,17 +77,20 @@ export default {
   margin-top: -10px;
   width: 40px;
   height: 30px;
-  border-radius: .2em;
-  border: solid black 1px;
-  background-color: white;
-  cursor: pointer;
   font-weight: bold;
+  border: none;
+  color: white;
+  background-color: blue;
+  font-size: 16px;
+  padding: 5px;
+  text-align: center;
+  text-decoration: none;
 }
 
 .friendPhoto img {
   width: 70px;
   height: 80px;
-  border-radius: 60%;
+  border-radius: 50%;
   border: none;
   box-shadow: 0 0 0 1px rgba(0,0,0,.15), 0 2px 3px rgba(0,0,0,.2);
   flex-grow: 2;
