@@ -4,7 +4,7 @@
     <li class="friend" v-for="friend in friends" :key="friend.id">
       <span class="friendPhoto"><img :src="require(`../assets/images/` + friend.photo)" alt="friend photo"></span>
       <span class="friendName"><a href="">{{ friend.name }}</a></span>
-      <button @click.prevent="toggleButton" class="btn">{{ buttonText }}</button>
+      <button @click.prevent="toggleButton" class="btn">Add</button>
     </li>
     </ul>
 </section>
@@ -69,7 +69,6 @@ export default {
    justify-content: space-between;
    width: 380px;
    height: 80px;
-   border-radius: .5em;
 }
 
 .btn {

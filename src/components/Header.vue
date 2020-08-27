@@ -8,7 +8,7 @@
             <ul>
                 <li><router-link to="/">Home</router-link></li>
                 <li><router-link to="/friends">Friends</router-link></li>
-                <li><a href="#">Messaging</a></li>
+                <li><router-link to="/messaging">Messaging</router-link></li>
                 <li><a href="#">Logout</a></li>
             </ul>
         </nav>
