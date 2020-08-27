@@ -56,10 +56,12 @@ export default {
     border: none;
     background-color: whitesmoke;
     flex-grow: 2;
+    outline: none;
 }
 
 .search-button {
     color: black;
+    outline: none;
 }
 
 .links {

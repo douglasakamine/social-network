@@ -48,14 +48,16 @@ export default {
     margin-top: 70px;
     margin-left: 320px;
     padding: 10px;
-    border: solid 1px black;
+    border: none;
     text-align: center;
     background-color: whitesmoke;
-    box-shadow:  gray 2px 2px 1px;
+    box-shadow:  0 0 0 1px rgba(0,0,0,.15), 0 2px 3px rgba(0,0,0,.2);
 }
 
 #post-text {
     width: 80%;
+    border: none;
+    outline: none;
 }
 
 .button-post {

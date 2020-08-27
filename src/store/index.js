@@ -15,22 +15,26 @@ export default new Vuex.Store({
     friends: [{
       id: '1',
       name: 'John Snow',
-      photo: 'john.jpeg'
+      photo: 'john.jpeg',
+      isFriend: true
     },
     {
       id: '2',
       name: 'Luke Skywalker',
-      photo: 'luke.jpeg'
+      photo: 'luke.jpeg',
+      isFriend: false
     },
     {
       id: '3',
       name: 'Rick Grimes',
-      photo: 'rick-grimes.jpg'
+      photo: 'rick-grimes.jpg',
+      isFriend: true
     },
     {
       id: '4',
       name: 'Batman',
-      photo: 'batman.png'
+      photo: 'batman.png',
+      isFriend: false
     }]
   },
   getters: {

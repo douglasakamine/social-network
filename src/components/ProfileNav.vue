@@ -25,21 +25,22 @@ export default {
 <style scoped>
 
 #profileNav {
-    border: solid 1px black;
+    border: none;
     width: 200px;
     text-align: center;
     background-color: whitesmoke;
     position: fixed;
     top: 70px;
     left: 100px;
-    box-shadow:  gray 2px 2px 1px;
+    box-shadow:  0 0 0 1px rgba(0,0,0,.15), 0 2px 3px rgba(0,0,0,.2);
 }
 
 #profilePhoto {
     width: 80%;
     margin: 5px;
-    border: solid 1px;
+    border: none;
     border-radius: 50%;
+    box-shadow:  0 0 0 1px rgba(0,0,0,.15), 0 2px 3px rgba(0,0,0,.2);
 
 }
 </style>

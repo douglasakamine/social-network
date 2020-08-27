@@ -4,7 +4,7 @@
     <li class="friend" v-for="friend in friends" :key="friend.id">
       <span class="friendPhoto"><img :src="require(`../assets/images/` + friend.photo)" alt="friend photo"></span>
       <span class="friendName"><a href="">{{ friend.name }}</a></span>
-      <button @click.prevent="addFriend" class="btn">Add</button>
+      <button @click.prevent="toggleButton" class="btn">{{ buttonText }}</button>
     </li>
     </ul>
 </section>
@@ -15,6 +15,11 @@
 import { mapGetters, mapActions } from 'vuex'
 
 export default {
+  data () {
+    return {
+      buttonText: 'Add'
+    }
+  },
   computed: {
     ...mapGetters({
       friends: 'getFriends'
@@ -23,7 +28,15 @@ export default {
   methods: {
     ...mapActions([
       'addFriend'
-    ])
+    ]),
+    toggleButton () {
+      // if (this.buttonText === 'Add') {
+      //   this.buttonText = 'Remove'
+      // } else {
+      //   this.buttonText = 'add'
+      // }
+      this.buttonText = 'remove'
+    }
   }
 }
 </script>
@@ -48,9 +61,9 @@ export default {
 .friend {
    margin: 10px;
    padding: 10px;
-   border: black 1px solid;
+   border: none;
    background-color: whitesmoke;
-   box-shadow:  gray 2px 2px 1px;
+   box-shadow: 0 0 0 1px rgba(0,0,0,.15), 0 2px 3px rgba(0,0,0,.2);
    display: flex;
    align-items: center;
    justify-content: space-between;
@@ -76,7 +89,8 @@ export default {
   width: 70px;
   height: 80px;
   border-radius: 60%;
-  border: black solid 1px;
+  border: none;
+  box-shadow: 0 0 0 1px rgba(0,0,0,.15), 0 2px 3px rgba(0,0,0,.2);
   flex-grow: 2;
   cursor: pointer;
 }

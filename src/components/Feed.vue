@@ -3,7 +3,7 @@
             <div class="post" v-for="post in posts.slice().reverse()" :key="post.id">
                 <h2>{{ post.name }}</h2>
                 <p>{{ post.content}}</p>
-                    <img id="postPhoto" src="../assets/images/paisagem.jpg" alt="paisagem">
+                <img id="postPhoto" src="../assets/images/paisagem.jpg" alt="paisagem">
             </div>
         </section>
 </template>
@@ -29,11 +29,11 @@ export default {
     margin-left: 320px;
 }
 .post {
-    border: solid 1px black;
+    border: none;
     text-align: center;
     background-color: whitesmoke;
     padding: 10px;
-    box-shadow:  gray 2px 2px 1px;
+    box-shadow: 0 0 0 1px rgba(0,0,0,.15), 0 2px 3px rgba(0,0,0,.2);
     margin-bottom: 10px;
 }
 

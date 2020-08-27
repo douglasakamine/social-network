@@ -20,14 +20,15 @@ export default {
 
 <style scoped>
 #sidebar {
-    border: solid 1px black;
+    /* border: solid 1px black; */
+    border: none;
     width: 250px;
     text-align: center;
     background-color: whitesmoke;
     position: fixed;
     top: 70px;
     left: 940px;
-    box-shadow:  gray 2px 2px 1px;
+    box-shadow: 0 0 0 1px rgba(0,0,0,.15), 0 2px 3px rgba(0,0,0,.2);
 }
 
 #polishop {
