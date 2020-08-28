@@ -1,10 +1,11 @@
 <template>
         <aside id="profileNav">
-        <img id="profilePhoto" src="../assets/images/Azula.png" alt="avatar">
+        <img id="profilePhoto" src="../assets/images/douglas.jpeg" alt="avatar">
         <hr style="color:black">
         <div><h3>{{ name }}</h3></div>
-        <div><p>{{ profileDescription }}</p></div>
-        <div><p>Outras informacoes sobre mim</p></div>
+        <div><p>{{ profileDescription1 }}</p></div>
+        <div><p>{{ profileDescription2 }}</p></div>
+        <div><p><strong>{{ countFriends }}</strong> Friends</p></div>
     </aside>
 </template>
 
@@ -15,7 +16,9 @@ export default {
   computed: {
     ...mapState([
       'name',
-      'profileDescription'
+      'profileDescription1',
+      'profileDescription2',
+      'countFriends'
     ])
   }
 

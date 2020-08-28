@@ -1,8 +1,8 @@
 <template>
     <section class="post-form post">
                 <form @submit.prevent="Submit">
-                <textarea v-model="formData.content" name="post-text" id="post-text" cols="30" rows="10"
-                placeholder="Type something..."></textarea>
+                <textarea v-model="formData.content" name="post-text" id="post-text" cols="72" rows="7"
+                placeholder="Write something..."></textarea>
                 <div>
                 <input type="file" name="post-photo" id="post-photo">
                 <button class="button-post" type="submit">Publicar Post</button>
@@ -44,7 +44,7 @@ export default {
 
 .post {
     text-align: center;
-    width: 578px;
+    width: 580px;
     margin-top: 70px;
     margin-left: 320px;
     padding: 10px;
@@ -55,7 +55,7 @@ export default {
 }
 
 #post-text {
-    width: 80%;
+    width: 100%;
     border: none;
     outline: none;
 }

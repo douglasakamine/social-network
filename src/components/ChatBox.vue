@@ -1,7 +1,9 @@
 <template>
     <section class="chat-box">
         <div class="box-messaging">
-                <div class="message">Hello Douglas How Are You?</div>
+                <div class="message">Hey! How is it going?<div class="time">14:05</div></div>
+                <div class="message">Would you like to go to the party tonight?
+                    <div class="time">14:07</div></div>
                 </div>
             <div class="typing-box"><textarea name="messaging" id="" cols="70"
             rows="10" placeholder="Write a message..."></textarea>
@@ -35,6 +37,21 @@ export default {
 .typing-box textarea {
     outline: none;
     border: none;
+}
+
+.message {
+    width: 350px;
+    padding: 15px 15px 5px 15px;
+    border: solid 1px #B4D6D3;
+    background-color: #B4D6D3;
+    border-radius: 1em;
+    margin-bottom: 10px;
+}
+
+.time {
+    font-style: italic;
+    font-size: 12px;
+    text-align: right;
 }
 
 #send-message {

@@ -6,12 +6,25 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   state: {
     name: 'Douglas Akamine',
-    profileDescription: 'Brazilian, Work at Self-employed',
+    profileDescription1: 'Brazilian, Web Developer',
+    profileDescription2: 'Lives in Japan',
+    countFriends: 0,
     posts: [{
       id: '1',
+      name: 'Luke Skywalker',
+      photo: 'luke.jpeg',
+      date: '10 minutes ago',
+      content: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Repel Lorem Ipsum conesectuatus',
+      postImage: 'starwars.jpg'
+    }, {
+      id: '2',
       name: 'John Snow',
-      content: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Repel'
-    }],
+      photo: 'john.jpeg',
+      date: '5 minutes ago',
+      content: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Repel',
+      postImage: 'game-thrones.jpg'
+    }
+    ],
     friends: [{
       id: '1',
       name: 'John Snow',
