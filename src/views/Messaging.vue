@@ -1,11 +1,13 @@
 <template>
 <div class="messaging">
+  <Header />
     <FriendsList />
     <ChatBox />
 </div>
 </template>
 
 <script>
+import Header from '@/components/Header'
 import FriendsList from '@/components/FriendsList'
 import ChatBox from '@/components/ChatBox'
 // @ is an alias to /src
@@ -13,7 +15,8 @@ import ChatBox from '@/components/ChatBox'
 export default {
   components: {
     FriendsList,
-    ChatBox
+    ChatBox,
+    Header
   }
 
 }

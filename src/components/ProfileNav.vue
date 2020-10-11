@@ -1,27 +1,23 @@
 <template>
-        <aside id="profileNav">
-        <img id="profilePhoto" src="../assets/images/douglas.jpeg" alt="avatar">
-        <hr style="color:black">
-        <div><h3>{{ name }}</h3></div>
-        <div><p>{{ profileDescription1 }}</p></div>
-        <div><p>{{ profileDescription2 }}</p></div>
-        <div><p><strong>{{ countFriends }}</strong> Friends</p></div>
-    </aside>
+  <aside v-if="profile" id="profileNav">
+    <img v-cloak id="profilePhoto" :src="profile.photo" alt="avatar">
+     <hr style="color:black">
+    <div><h3><router-link :to="'/profile/' + profile.username">{{ profile.name }}</router-link></h3></div>
+    <div><p><strong>Work at:</strong> {{ profile.work }}</p></div>
+    <div><p><strong>Birth:</strong> {{ profile.birth }}</p></div>
+    <div><p><strong>{{ profile.countFriends }}</strong> Friends</p></div>
+  </aside>
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapGetters } from 'vuex'
 
 export default {
   computed: {
-    ...mapState([
-      'name',
-      'profileDescription1',
-      'profileDescription2',
-      'countFriends'
-    ])
+    ...mapGetters({
+      profile: 'getProfileInfo'
+    })
   }
-
 }
 </script>
 
@@ -36,14 +32,22 @@ export default {
     top: 70px;
     left: 100px;
     box-shadow:  0 0 0 1px rgba(0,0,0,.15), 0 2px 3px rgba(0,0,0,.2);
+    border-radius: 1em;
 }
 
 #profilePhoto {
-    width: 80%;
+    width: 170px;
+    height: 170px;
+    overflow: hidden;
     margin: 5px;
     border: none;
     border-radius: 50%;
     box-shadow:  0 0 0 1px rgba(0,0,0,.15), 0 2px 3px rgba(0,0,0,.2);
-
+}
+[v-cloak] {
+  display: none;
+}
+a {
+  text-decoration: none;
 }
 </style>

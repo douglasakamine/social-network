@@ -1,16 +1,16 @@
 <template>
-<div id="feed">
-            <div class="post" v-for="post in posts" :key="post.id">
-              <div class="post-header">
-              <img id="photo" :src="post.photo">
-                <h3><router-link :to="'/profile/' + post.username">{{ post.name }}</router-link></h3>
-                <div class="post-date">{{ post.date | moment("from", "now") }}</div>
-                </div>
-                <div class="post-content"><span v-html="post.content"></span></div>
-                <img id="postImage" :src="post.file">
-                <div class="like"><a href="click"><i class="far fa-thumbs-up fa-2x"></i><strong> Like</strong></a></div>
-            </div>
-        </div>
+ <div id="my-feed">
+  <div class="post" v-for="post in posts" :key="post.id">
+    <div class="post-header">
+    <img id="photo" :src="post.photo">
+    <h3>{{ post.name }}</h3>
+    <div class="post-date">{{ post.date | moment("from", "now") }}</div>
+    </div>
+    <div class="post-content"><span v-html="post.content"></span></div>
+    <img id="postImage" :src="post.file">
+    <div class="like"><a href="click"><i class="far fa-thumbs-up fa-2x"></i><strong> Like</strong></a></div>
+  </div>
+ </div>
 </template>
 
 <script>
@@ -26,11 +26,10 @@ export default {
 </script>
 
 <style scoped>
-#feed {
+#my-feed {
     text-align: center;
-    width: 600px;
+    width: 500px;
     margin-top: 10px;
-    margin-left: 320px;
 }
 .post {
     border: none;

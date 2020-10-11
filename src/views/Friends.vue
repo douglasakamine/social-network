@@ -1,20 +1,26 @@
 <template>
-<section class="friends-page">
+<div class="friends-page">
+  <Header />
     <ul class="friends">
     <li class="friend" v-for="friend in friends" :key="friend.id">
-      <span class="friendPhoto"><img :src="require(`../assets/images/` + friend.photo)" alt="friend photo"></span>
-      <span class="friendName"><a href="">{{ friend.name }}</a></span>
-      <button @click.prevent="toggleButton" class="btn">Add</button>
+      <span class="friendPhoto"><img :src="friend.photo" alt="friend photo"></span>
+      <span class="friendName"><router-link :to="'/profile/' + friend.username">{{ friend.name }}</router-link></span>
+      <button @click.prevent="toggleButton" class="btn">{{ friend.isFriend }}</button>
     </li>
     </ul>
-</section>
+</div>
 </template>
 
 <script>
 // @ is an alias to /src
+import Header from '@/components/Header'
 import { mapGetters, mapActions } from 'vuex'
+import Utils from '@/mixins/UtilsMixin'
 
 export default {
+  components: {
+    Header
+  },
   data () {
     return {
       buttonText: 'Add'
@@ -37,7 +43,14 @@ export default {
       // }
       this.buttonText = 'remove'
     }
-  }
+  },
+  beforeMount () {
+    this.getFriendsList()
+  },
+  destroyed () {
+    this.$store.state.friends = []
+  },
+  mixins: [Utils]
 }
 </script>
 
@@ -69,6 +82,7 @@ export default {
    justify-content: space-between;
    width: 380px;
    height: 80px;
+   border-radius: 1em;
 }
 
 .btn {

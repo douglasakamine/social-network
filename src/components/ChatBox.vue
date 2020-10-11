@@ -1,5 +1,5 @@
 <template>
-    <section class="chat-box">
+    <div class="chat-box">
         <div class="box-messaging">
                 <div class="message">Hey! How is it going?<div class="time">14:05</div></div>
                 <div class="message">Would you like to go to the party tonight?
@@ -9,7 +9,7 @@
             rows="10" placeholder="Write a message..."></textarea>
             <button id="send-message">Send</button>
     </div>
-    </section>
+    </div>
 </template>
 
 <script>

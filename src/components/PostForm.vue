@@ -1,40 +1,45 @@
 <template>
-    <section class="post-form post">
-                <form @submit.prevent="Submit">
-                <textarea v-model="formData.content" name="post-text" id="post-text" cols="72" rows="7"
-                placeholder="Write something..."></textarea>
-                <div>
-                <input type="file" name="post-photo" id="post-photo">
-                <button class="button-post" type="submit">Publicar Post</button>
-            </div>
-            </form>
-    </section>
+  <div class="post-form post">
+    <form @submit.prevent="sendPost" name="post-text">
+      <textarea form="post-text" id="post-text" cols="72" rows="5"
+      placeholder=" Write something..."></textarea>
+        <div id="post-buttons">
+          <button type="button" class="button-file-post" @click="$refs.inputFilePost.click()">
+            <i class="far fa-image"></i></button>
+          <input @change="uploadImageFromForm" id="input-file-post" type="file"
+          ref="inputFilePost" style="display: none">
+          <button class="button-post" type="submit">Send Post</button>
+        </div>
+    </form>
+  </div>
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import Utils from '../mixins/UtilsMixin'
 
 export default {
-  data () {
-    return {
-      formData: {
-        id: '9',
-        name: 'Douglas Post',
-        content: ''
-      }
-    }
-  },
+  mixins: [Utils],
   methods: {
-    ...mapActions([
-      'addPost'
-    ]),
-    Submit () {
-      const { id, name, content } = this.formData
-
-      console.log(this.formData)
-      const values = { id, name, content }
-
-      this.addPost(values)
+    getDate () {
+      const date = new Date()
+      return date.getTime()
+    },
+    sendPost () {
+      var post = {
+        photo: this.$store.state.profile.photo,
+        date: this.getDate(),
+        name: this.$store.state.profile.name,
+        username: this.$store.state.profile.username,
+        content: event.target.children[0].value.replace(/\n\r?/g, '<br />'),
+        file: this.$store.state.currentImageLink
+      }
+      this.$store.dispatch('addPost', post)
+      event.target.children[0].value = null
+      console.log(event)
+    },
+    async uploadImageFromForm () {
+      var fileURL = await this.uploadFile(event.target.files[0])
+      this.$store.dispatch('uploadFilePost', fileURL)
     }
   }
 }
@@ -50,27 +55,44 @@ export default {
     padding: 10px;
     border: none;
     text-align: center;
-    background-color: whitesmoke;
+    background-color: white;
     box-shadow:  0 0 0 1px rgba(0,0,0,.15), 0 2px 3px rgba(0,0,0,.2);
+    border-radius: 1em;
 }
 
 #post-text {
     width: 100%;
     border: none;
     outline: none;
+    white-space: pre-wrap;
+    resize: none;
+    background-color: whitesmoke;
+    border-radius: .6em;
 }
 
-.button-post {
+button {
     color: white;
     font-size: 15px;
-    font-weight: bold;
     border: none;
     color: white;
-    background-color: blue;
+    background-color: #008CBA;
     font-size: 16px;
     padding: 5px;
     text-align: center;
     text-decoration: none;
     margin: 4px;
+    border-radius: .2em;
+    cursor: pointer;
+}
+.button-file-post {
+    background-color: #4CAF50;
+}
+
+.upload-box {
+    position: absolute;
+    top: 250px;
+    right: 50%;
+    margin: auto;
+    border: solid 1px grey;
 }
 </style>

@@ -1,5 +1,6 @@
 <template>
 <div class="home">
+<Header />
 <ProfileNav />
 <PostForm />
 <Feed />
@@ -14,13 +15,19 @@ import ProfileNav from '@/components/ProfileNav'
 import Feed from '@/components/Feed'
 import AdsBar from '@/components/AdsBar'
 import PostForm from '@/components/PostForm'
+import Header from '@/components/Header'
 
 export default {
   components: {
     ProfileNav,
     Feed,
     AdsBar,
-    PostForm
+    PostForm,
+    Header
   }
 }
 </script>
+
+<style scoped>
+
+</style>

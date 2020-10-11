@@ -1,20 +1,25 @@
 <template>
-            <aside id="sidebar">
-            <img id="polishop" src="../assets/images/advertising-word-block.jpg" alt="polishop">
-            <div><h2>Advertising here</h2></div>
-            <div><p>Ads</p></div>
-            <div><p>Algumas informacoes importantes</p></div>
-            <div><p>Outras informacoes importantes</p></div>
-
+  <aside id="sidebar">
+    <img id="ads" :src="require(`../assets/images/` + ads[0].adsImage )" alt="Ads Image">
+      <div><h2>Advertising here</h2></div>
+      <div><p>{{ ads[0].adsDescription }}</p></div>
             <footer>
                 <p>Social Network Corporation © 2020</p>
+                <p>Project Developed by Douglas Akamine</p>
             </footer>
 
         </aside>
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
+
 export default {
+  computed: {
+    ...mapGetters({
+      ads: 'getAds'
+    })
+  }
 }
 </script>
 
@@ -31,7 +36,7 @@ export default {
     box-shadow: 0 0 0 1px rgba(0,0,0,.15), 0 2px 3px rgba(0,0,0,.2);
 }
 
-#polishop {
+#ads {
     width: 80%;
     margin: 5px;
     border: solid 1px;
@@ -39,6 +44,7 @@ export default {
 
 footer {
     position: relative;
-    top: 60px;
+    top: 70px;
 }
+
 </style>
