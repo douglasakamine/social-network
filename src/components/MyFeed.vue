@@ -19,7 +19,7 @@ import { mapGetters } from 'vuex'
 export default {
   computed: {
     ...mapGetters({
-      posts: 'getPost'
+      posts: 'getIndividualFeed'
     })
   }
 }

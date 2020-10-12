@@ -20,7 +20,7 @@
           <div class="information">
             <div id="work-information"><strong>Work at </strong>{{ profile.work }}</div>
             <div id="birth-information"><strong>Birth </strong>{{ profile.birth }}</div>
-            <div id="friends-information"><strong>{{ profile.countFriends }}</strong> Friends</div>
+            <div v-if="profile.friends" id="friends-information"><strong>{{ profile.friends.length }}</strong> Friends</div>
             <div id="address-information"><strong>Living in </strong>{{ profile.city }}, {{ profile.country }}</div>
           </div>
       </div>
@@ -71,7 +71,7 @@ export default {
       this.showEditProfileInfo = !this.showEditProfileInfo
     }
   },
-  beforeMount () {
+  created () {
     if (this.$route.params.id === this.$store.state.profile.username) {
       this.myProfileConfig = true
     }

@@ -31,7 +31,8 @@ export default {
         name: this.$store.state.profile.name,
         username: this.$store.state.profile.username,
         content: event.target.children[0].value.replace(/\n\r?/g, '<br />'),
-        file: this.$store.state.currentImageLink
+        file: this.$store.state.currentImageLink,
+        likes: []
       }
       this.$store.dispatch('addPost', post)
       event.target.children[0].value = null
@@ -74,7 +75,6 @@ button {
     color: white;
     font-size: 15px;
     border: none;
-    color: white;
     background-color: #008CBA;
     font-size: 16px;
     padding: 5px;

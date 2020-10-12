@@ -1,11 +1,19 @@
 <template>
 <section class="login-page">
-<form class="login-form" @submit.prevent="userLogin">
-    <input type="email" id="email-input" v-model="user.email">
-    <input type="password" id="password-input" v-model="user.password">
-    <button type="submit" id="login-button">Log In</button>
-</form>
-<hr>
+  <div class="login-header">
+    <form class="login-form" @submit.prevent="userLogin">
+      <input type="email" id="email-input" v-model="user.email" placeholder="Email...">
+      <input type="password" id="password-input" v-model="user.password" placeholder="Password...">
+      <button type="submit" id="login-button">Log In</button>
+    </form>
+  </div>
+  <div class="title-box">
+    <h1>Social Network</h1>
+    <p>A Project made in Vue Js and Firebase</p>
+    <p>Developed by Douglas Akamine</p>
+   </div>
+<div class="sigin-form-box">
+  <h2>Create an Account</h2>
 <form class="sigin-form" @submit.prevent="submit">
     <input type="text" id="name-form" v-model="form.name" placeholder="Your Name">
     <input type="text" id="username-form" v-model="form.username" placeholder="Your username">
@@ -13,6 +21,7 @@
     <input type="password" id="password-form" v-model="form.password" placeholder="Password">
     <button type="submit" id="signin-button">Sign Up</button>
 </form>
+</div>
 </section>
 </template>
 
@@ -68,5 +77,80 @@ export default {
 </script>
 
 <style scoped>
-
+.login-page {
+  width: 100%;
+}
+.login-header {
+   background-color: #2620d8;
+   padding-left: 80px;
+   padding-right: 80px;
+   height: 40px;
+   display: flex;
+   justify-content: flex-end;
+}
+.login-form {
+  width: 400px;
+  padding: 5px;
+  text-align: center;
+}
+.login-form input {
+  height: 20px;
+  border-radius: 0.2em;
+  outline: none;
+  margin: 2px;
+  border: none;
+}
+.login-form button {
+    border: none;
+    background-color: white;
+    height: 20px;
+    padding: 5px;
+    text-align: center;
+    text-decoration: none;
+    border-radius: .2em;
+    cursor: pointer;
+}
+.sigin-form-box {
+  width: 300px;
+  float: right;
+  margin: 100px 100px auto auto;
+  padding: 50px;
+  background-color: white;
+  border-radius: 1em;
+}
+.sigin-form {
+  display: flex;
+  flex-direction: column;
+}
+.sigin-form input {
+  margin: 5px;
+  height: 20px;
+}
+.title-box {
+  float: left;
+  margin: 100px auto auto 200px;
+  text-align: center;
+}
+.title-box h1 {
+  color: #2620d8;
+  font-size: 60px;
+  margin: 20px;
+}
+.title-box p {
+  font-size: 20px;
+  margin: 5px;
+}
+.sigin-form button {
+    color: white;
+    font-size: 15px;
+    border: none;
+    background-color: #008CBA;
+    font-size: 16px;
+    padding: 5px;
+    text-align: center;
+    text-decoration: none;
+    margin: 4px;
+    border-radius: .2em;
+    cursor: pointer;
+}
 </style>

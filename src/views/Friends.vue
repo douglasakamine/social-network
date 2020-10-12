@@ -5,7 +5,7 @@
     <li class="friend" v-for="friend in friends" :key="friend.id">
       <span class="friendPhoto"><img :src="friend.photo" alt="friend photo"></span>
       <span class="friendName"><router-link :to="'/profile/' + friend.username">{{ friend.name }}</router-link></span>
-      <button @click.prevent="toggleButton" class="btn">{{ friend.isFriend }}</button>
+      <button @click.prevent="addFriendButton(friend.username)" class="btn">{{ buttonAddFriendDescription(friend.isFriend) }}</button>
     </li>
     </ul>
 </div>
@@ -16,15 +16,12 @@
 import Header from '@/components/Header'
 import { mapGetters, mapActions } from 'vuex'
 import Utils from '@/mixins/UtilsMixin'
+import { db } from '../main'
+import firebase from 'firebase'
 
 export default {
   components: {
     Header
-  },
-  data () {
-    return {
-      buttonText: 'Add'
-    }
   },
   computed: {
     ...mapGetters({
@@ -35,13 +32,29 @@ export default {
     ...mapActions([
       'addFriend'
     ]),
-    toggleButton () {
-      // if (this.buttonText === 'Add') {
-      //   this.buttonText = 'Remove'
-      // } else {
-      //   this.buttonText = 'add'
-      // }
-      this.buttonText = 'remove'
+    addFriendButton (friend) {
+      if (this.$store.state.profile.friends.includes(friend)) {
+        db.collection('users').doc(this.$store.state.profile.username)
+          .update({
+            friends: firebase.firestore.FieldValue.arrayRemove(friend)
+          })
+        db.collection('users').doc(friend)
+          .update({
+            friends: firebase.firestore.FieldValue.arrayRemove(this.$store.state.profile.username)
+          })
+      } else {
+        db.collection('users').doc(friend)
+          .update({
+            pendingList: firebase.firestore.FieldValue.arrayUnion(this.$store.state.profile.username)
+          })
+      }
+    },
+    buttonAddFriendDescription (isFriend) {
+      switch (isFriend) {
+        case 'friend': return 'Remove'
+        case 'notFriend': return 'Add'
+        case 'pending': return 'Pending'
+      }
     }
   },
   beforeMount () {

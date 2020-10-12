@@ -14,13 +14,14 @@ export default {
   name: 'App',
   components: {
   },
-  beforeMount () {
+  beforeCreate () {
     auth.onAuthStateChanged(user => {
       if (user) {
-        this.getUserData(user.displayName)
+        this.getUserData(user)
       } else {
         this.$store.replaceState({
           profile: {},
+          friendProfile: {},
           posts: [],
           currentImageLink: '',
           friends: [],

@@ -35,8 +35,16 @@ export default new Vuex.Store({
       return state.profile.album
     },
     getFriendProfile (state) {
-      console.log(state.friendProfile)
       return state.friendProfile
+    },
+    getIndividualFeed (state) {
+      var posts = []
+      state.posts.forEach(post => {
+        if (post.username === state.friendProfile.username) {
+          posts.push(post)
+        }
+      })
+      return posts
     }
   }, // Getters End
   mutations: {
@@ -63,7 +71,9 @@ export default new Vuex.Store({
     },
     setFriendsList (state, friend) {
       if (state.profile.friends.includes(friend.id)) {
-        friend.isFriend = true
+        friend.isFriend = 'friend'
+      } else if (state.profile.pendingList.includes(friend.id)) {
+        friend.isFriend = 'pending'
       }
       state.friends.push(friend)
     },
@@ -87,6 +97,7 @@ export default new Vuex.Store({
       commit('appendPost', post)
     },
     setProfileInfo: ({ commit }, userData) => {
+      console.log('SET PROFILE INFO')
       commit('setProfileInfo', userData)
     },
     setInitialFeed: ({ commit }, posts) => {
@@ -110,7 +121,6 @@ export default new Vuex.Store({
       commit('setFriendsList', user)
     },
     setFriendProfile: ({ commit }, userData) => {
-      console.log(userData)
       commit('setFriendProfile', userData)
     }
   } // Actions End

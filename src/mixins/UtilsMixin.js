@@ -20,8 +20,30 @@ export default {
           console.error('Error writing document: ', error)
         })
     },
-    getUserData (user) {
-      db.collection('users').doc(user).get().then(doc => {
+    getFriendsList () {
+      db.collection('users').get().then(querySnapshot => {
+        querySnapshot.forEach(users => {
+          if (users.data().username === this.$store.state.profile.username) {
+            return // Skip your own profile
+          }
+          var user = {
+            id: users.id,
+            name: users.data().name,
+            photo: users.data().photo,
+            username: users.data().username,
+            isFriend: 'notFriend'
+          }
+          this.$store.dispatch('setFriendsList', user)
+        })
+      })
+    },
+    async getUserFriendData (user) {
+      await db.collection('users').doc(user).get().then(doc => {
+        this.$store.dispatch('setFriendProfile', doc.data())
+      })
+    },
+    async getUserData (user) {
+      await db.collection('users').doc(user.displayName).get().then(doc => {
         this.$store.dispatch('setProfileInfo', doc.data())
         var friends = doc.data().friends
         friends.forEach(friend => {
@@ -32,25 +54,12 @@ export default {
               })
             })
         })
-      })
-    },
-    getFriendsList () {
-      db.collection('users').get().then(querySnapshot => {
-        querySnapshot.forEach(users => {
-          var user = {
-            id: users.id,
-            name: users.data().name,
-            photo: users.data().photo,
-            username: users.data().username,
-            isFriend: false
-          }
-          this.$store.dispatch('setFriendsList', user)
-        })
-      })
-    },
-    async getUserFriendData (user) {
-      await db.collection('users').doc(user).get().then(doc => {
-        this.$store.dispatch('setFriendProfile', doc.data())
+        db.collection('posts').where('username', '==', user.displayName)
+          .get().then(querySnapshot => {
+            querySnapshot.forEach(doc => {
+              this.$store.dispatch('setInitialFeed', doc.data())
+            })
+          })
       })
     }
   }

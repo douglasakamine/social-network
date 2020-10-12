@@ -1,11 +1,11 @@
 <template>
-  <aside v-if="profile" id="profileNav">
+  <aside v-if="profile" id="profileNav" v-cloak>
     <img v-cloak id="profilePhoto" :src="profile.photo" alt="avatar">
      <hr style="color:black">
     <div><h3><router-link :to="'/profile/' + profile.username">{{ profile.name }}</router-link></h3></div>
     <div><p><strong>Work at:</strong> {{ profile.work }}</p></div>
     <div><p><strong>Birth:</strong> {{ profile.birth }}</p></div>
-    <div><p><strong>{{ profile.countFriends }}</strong> Friends</p></div>
+    <div v-if="profile.friends"><p><strong>{{ profile.friends.length }}</strong> Friends</p></div>
   </aside>
 </template>
 
@@ -22,6 +22,9 @@ export default {
 </script>
 
 <style scoped>
+[v-cloak] {
+  display: none;
+}
 
 #profileNav {
     border: none;
