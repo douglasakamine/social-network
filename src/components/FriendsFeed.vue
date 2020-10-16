@@ -15,18 +15,13 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import Utils from '../mixins/UtilsMixin'
 
 export default {
   computed: {
     ...mapGetters({
-      posts: 'getMyPosts'
+      posts: 'getFriendsPosts'
     })
-  },
-  created () {
-    this.getMyPosts()
-  },
-  mixins: [Utils]
+  }
 }
 </script>
 

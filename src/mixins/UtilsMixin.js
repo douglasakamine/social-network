@@ -1,4 +1,4 @@
-import { db, st } from '../main'
+import { st, dbUsers, dbPosts } from '../main'
 
 export default {
   methods: {
@@ -12,16 +12,16 @@ export default {
     async updateProfile (payload) {
       var data = payload.data
       var value = payload.value
-      db.collection('users').doc(this.$store.state.profile.username).update({ [data]: value })
-        .then(function () {
-          console.log('Successfully edited!')
+      dbUsers.doc(this.$store.state.profile.username).update({ [data]: value })
+        .then(() => {
+          this.$store.dispatch('updateProfileInfo', payload)
         })
-        .catch(function (error) {
+        .catch(error => {
           console.error('Error writing document: ', error)
         })
     },
     getFriendsList () {
-      db.collection('users').get().then(querySnapshot => {
+      dbUsers.get().then(querySnapshot => {
         querySnapshot.forEach(users => {
           if (users.data().username === this.$store.state.profile.username) {
             return // Skip your own profile
@@ -31,35 +31,50 @@ export default {
             name: users.data().name,
             photo: users.data().photo,
             username: users.data().username,
-            isFriend: 'notFriend'
+            isFriend: 'notFriend',
+            pendingList: users.data().pendingList,
+            friends: users.data().friends
           }
           this.$store.dispatch('setFriendsList', user)
         })
       })
     },
     async getUserFriendData (user) {
-      await db.collection('users').doc(user).get().then(doc => {
+      await dbUsers.doc(user).get().then(doc => {
         this.$store.dispatch('setFriendProfile', doc.data())
       })
     },
-    async getUserData (user) {
-      await db.collection('users').doc(user.displayName).get().then(doc => {
-        this.$store.dispatch('setProfileInfo', doc.data())
-        var friends = doc.data().friends
-        friends.forEach(friend => {
-          db.collection('posts').where('username', '==', friend)
-            .get().then(querySnapshot => {
-              querySnapshot.forEach(doc => {
-                this.$store.dispatch('setInitialFeed', doc.data())
-              })
-            })
-        })
-        db.collection('posts').where('username', '==', user.displayName)
+    getFriendsPosts () {
+      var friends = this.$store.getters.getProfileInfo.friends
+      friends.forEach(friend => {
+        dbPosts.where('username', '==', friend)
           .get().then(querySnapshot => {
             querySnapshot.forEach(doc => {
-              this.$store.dispatch('setInitialFeed', doc.data())
+              this.$store.dispatch('setFeed', doc.data())
             })
           })
+      })
+    },
+    getMyPosts () {
+      dbPosts.where('username', '==', this.$store.getters.getProfileInfo.username)
+        .get().then(querySnapshot => {
+          querySnapshot.forEach(doc => {
+            this.$store.dispatch('setFeed', doc.data())
+          })
+        })
+    },
+    resetState () {
+      this.$store.replaceState({
+        profile: {},
+        friendProfile: {},
+        posts: [],
+        currentImageLink: '',
+        friends: [],
+        ads: [{
+          id: '1',
+          adsImage: 'advertising-word-block.jpg',
+          adsDescription: 'Buy this product, Its Awesome!'
+        }]
       })
     }
   }

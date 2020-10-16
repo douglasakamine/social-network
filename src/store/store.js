@@ -18,9 +18,27 @@ export default new Vuex.Store({
     }]
   }, // State End
   getters: {
-    getPost (state) {
+    getFeed (state) { // Get initial Feed
       var newPost = state.posts.sort((a, b) => new Date(b.date) - new Date(a.date))
       return newPost
+    },
+    getFriendsPosts (state) { // Get individual posts of friends page
+      var posts = []
+      state.posts.forEach(post => {
+        if (post.username === state.friendProfile.username) {
+          posts.push(post)
+        }
+      })
+      return posts
+    },
+    getMyPosts (state) { // Get my individual posts of profile page
+      var posts = []
+      state.posts.forEach(post => {
+        if (post.username === state.profile.username) {
+          posts.push(post)
+        }
+      })
+      return posts
     },
     getFriends (state) {
       return state.friends
@@ -37,14 +55,8 @@ export default new Vuex.Store({
     getFriendProfile (state) {
       return state.friendProfile
     },
-    getIndividualFeed (state) {
-      var posts = []
-      state.posts.forEach(post => {
-        if (post.username === state.friendProfile.username) {
-          posts.push(post)
-        }
-      })
-      return posts
+    getPendingList (state) {
+      return state.profile.pendingList
     }
   }, // Getters End
   mutations: {
@@ -57,14 +69,8 @@ export default new Vuex.Store({
     setCurrentImageLink (state, link) {
       state.currentImageLink = link
     },
-    setInitialFeed (state, posts) {
+    setFeed (state, posts) {
       state.posts.push(posts)
-    },
-    setMyFeed (state, posts) {
-      state.posts.push(posts)
-    },
-    clearPostState (state) {
-      state.posts = []
     },
     updateProfileState (state, updateData) {
       state.profile[updateData.data] = updateData.value
@@ -72,19 +78,24 @@ export default new Vuex.Store({
     setFriendsList (state, friend) {
       if (state.profile.friends.includes(friend.id)) {
         friend.isFriend = 'friend'
-      } else if (state.profile.pendingList.includes(friend.id)) {
+      } else if (state.profile.pendingList.includes(friend.id) ||
+      friend.pendingList.includes(state.profile.username)) {
         friend.isFriend = 'pending'
       }
       state.friends.push(friend)
     },
     setFriendProfile (state, userData) {
       state.friendProfile = userData
+    },
+    setIsFriendButton (state, payload) {
+      console.log(payload)
+      state.friends[payload.user].isFriend = payload.value
+    },
+    removeFromPendingList (state, index) {
+      state.profile.pendingList.splice(index)
     }
   }, // Mutations End
   actions: {
-    clearPostState: ({ commit }) => {
-      commit('clearPostState')
-    },
     addPost: ({ commit }, post) => {
       firebase.firestore().collection('posts').doc()
         .set(post)
@@ -100,16 +111,8 @@ export default new Vuex.Store({
       console.log('SET PROFILE INFO')
       commit('setProfileInfo', userData)
     },
-    setInitialFeed: ({ commit }, posts) => {
-      commit('setInitialFeed', posts)
-    },
-    getMyFeed: ({ commit }, username) => {
-      firebase.firestore().collection('posts').where('username', '==', username)
-        .get().then(querySnapshot => {
-          querySnapshot.forEach(doc => {
-            commit('setMyFeed', doc.data())
-          })
-        })
+    setFeed: ({ commit }, posts) => {
+      commit('setFeed', posts)
     },
     uploadFilePost ({ commit }, imageURL) {
       commit('setCurrentImageLink', imageURL)
@@ -122,6 +125,12 @@ export default new Vuex.Store({
     },
     setFriendProfile: ({ commit }, userData) => {
       commit('setFriendProfile', userData)
+    },
+    setIsFriendButton: ({ commit }, payload) => {
+      commit('setIsFriendButton', payload)
+    },
+    removeFromPendingList: ({ commit }, index) => {
+      commit('removeFromPendingList', index)
     }
   } // Actions End
 }) // Vuex End

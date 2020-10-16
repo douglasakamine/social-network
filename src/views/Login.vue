@@ -11,6 +11,7 @@
     <h1>Social Network</h1>
     <p>A Project made in Vue Js and Firebase</p>
     <p>Developed by Douglas Akamine</p>
+    <p>Available at <a href="https://github.com/douglasakamine" target="_blank">GitHub</a></p>
    </div>
 <div class="sigin-form-box">
   <h2>Create an Account</h2>
@@ -104,7 +105,9 @@ export default {
     border: none;
     background-color: white;
     height: 20px;
-    padding: 5px;
+    margin: 2px;
+    padding: 2px;
+    font-weight: bold;
     text-align: center;
     text-decoration: none;
     border-radius: .2em;
@@ -112,8 +115,7 @@ export default {
 }
 .sigin-form-box {
   width: 300px;
-  float: right;
-  margin: 100px 100px auto auto;
+  margin: 100px auto auto 900px;
   padding: 50px;
   background-color: white;
   border-radius: 1em;
@@ -127,6 +129,7 @@ export default {
   height: 20px;
 }
 .title-box {
+  width: 500px;
   float: left;
   margin: 100px auto auto 200px;
   text-align: center;

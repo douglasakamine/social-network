@@ -16,6 +16,8 @@ import Feed from '@/components/Feed'
 import AdsBar from '@/components/AdsBar'
 import PostForm from '@/components/PostForm'
 import Header from '@/components/Header'
+import { auth, dbUsers } from '../main'
+import Utils from '../mixins/UtilsMixin'
 
 export default {
   components: {
@@ -24,7 +26,21 @@ export default {
     AdsBar,
     PostForm,
     Header
-  }
+  },
+  async beforeCreate () {
+    var user = auth.currentUser
+    if (user) {
+      await dbUsers.doc(user.displayName).get().then(doc => {
+        this.$store.dispatch('setProfileInfo', doc.data())
+      })
+      this.getFriendsPosts()
+      this.getMyPosts()
+    }
+  },
+  destroyed () {
+    this.resetState()
+  },
+  mixins: [Utils]
 }
 </script>
 

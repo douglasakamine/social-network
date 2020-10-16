@@ -1,5 +1,5 @@
 <template>
-  <div id="app">
+  <div id="app" v-cloak>
 
   <router-view></router-view>
 
@@ -7,8 +7,8 @@
 </template>
 
 <script>
-import Utils from '@/mixins/UtilsMixin'
-import { auth } from '@/main'
+import { auth } from './main'
+import Utils from './mixins/UtilsMixin'
 
 export default {
   name: 'App',
@@ -17,25 +17,12 @@ export default {
   beforeCreate () {
     auth.onAuthStateChanged(user => {
       if (user) {
-        this.getUserData(user)
+        console.log('LOGADO')
       } else {
-        this.$store.replaceState({
-          profile: {},
-          friendProfile: {},
-          posts: [],
-          currentImageLink: '',
-          friends: [],
-          ads: [{
-            id: '1',
-            adsImage: 'advertising-word-block.jpg',
-            adsDescription: 'Buy this product, Its Awesome!'
-          }]
-        })
+        console.log('DESLOGADO')
+        this.resetState()
       }
     })
-  },
-  destroyed () {
-    this.$store.dispatch('clearPostState')
   },
   mixins: [Utils]
 }
@@ -51,5 +38,9 @@ body {
     font-size: 13px;
     margin: 0;
     padding: 0;
+}
+
+[v-cloak] {
+  display: none;
 }
 </style>

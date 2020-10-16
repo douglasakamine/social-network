@@ -1,11 +1,16 @@
 <template>
 <div class="friends-page">
   <Header />
+  <div class="friend-solicitation" v-for="(pending, index) in pendingList" :key="pending.id">
+    <p>{{ pending }} is inviting you to join friends.</p>
+    <button id="accept-solicitation" @click="acceptSolicitation(pending, index)">Accept</button>
+    <button id="reject-solicitation" @click="rejectSolicitation(pending, index)">Reject</button>
+  </div>
     <ul class="friends">
-    <li class="friend" v-for="friend in friends" :key="friend.id">
+    <li class="friend" v-for="(friend, index) in friends" :key="friend.id">
       <span class="friendPhoto"><img :src="friend.photo" alt="friend photo"></span>
       <span class="friendName"><router-link :to="'/profile/' + friend.username">{{ friend.name }}</router-link></span>
-      <button @click.prevent="addFriendButton(friend.username)" class="btn">{{ buttonAddFriendDescription(friend.isFriend) }}</button>
+      <button @click.prevent="addFriendButton(friend.username, index)" class="btn">{{ buttonAddFriendDescription(friend.isFriend) }}</button>
     </li>
     </ul>
 </div>
@@ -16,7 +21,7 @@
 import Header from '@/components/Header'
 import { mapGetters, mapActions } from 'vuex'
 import Utils from '@/mixins/UtilsMixin'
-import { db } from '../main'
+import { db, dbUsers, auth } from '../main'
 import firebase from 'firebase'
 
 export default {
@@ -25,28 +30,32 @@ export default {
   },
   computed: {
     ...mapGetters({
-      friends: 'getFriends'
+      friends: 'getFriends',
+      pendingList: 'getPendingList'
     })
   },
   methods: {
     ...mapActions([
       'addFriend'
     ]),
-    addFriendButton (friend) {
+    addFriendButton (friend, index) {
+      console.log(friend, index)
       if (this.$store.state.profile.friends.includes(friend)) {
-        db.collection('users').doc(this.$store.state.profile.username)
+        dbUsers.doc(this.$store.state.profile.username)
           .update({
             friends: firebase.firestore.FieldValue.arrayRemove(friend)
           })
-        db.collection('users').doc(friend)
+        dbUsers.doc(friend)
           .update({
             friends: firebase.firestore.FieldValue.arrayRemove(this.$store.state.profile.username)
           })
+        this.$store.dispatch('setIsFriendButton', { user: index, value: 'notFriend' })
       } else {
-        db.collection('users').doc(friend)
+        dbUsers.doc(friend)
           .update({
             pendingList: firebase.firestore.FieldValue.arrayUnion(this.$store.state.profile.username)
           })
+        this.$store.dispatch('setIsFriendButton', { user: index, value: 'pending' })
       }
     },
     buttonAddFriendDescription (isFriend) {
@@ -55,10 +64,42 @@ export default {
         case 'notFriend': return 'Add'
         case 'pending': return 'Pending'
       }
+    },
+    acceptSolicitation (user, index) {
+      db.collection('users').doc(this.$store.state.profile.username)
+        .update({
+          pendingList: firebase.firestore.FieldValue.arrayRemove(user)
+        })
+      this.$store.dispatch('removeFromPendingList', index)
+      db.collection('users').doc(this.$store.state.profile.username)
+        .update({
+          friends: firebase.firestore.FieldValue.arrayUnion(user)
+        })
+      db.collection('users').doc(user)
+        .update({
+          friends: firebase.firestore.FieldValue.arrayUnion(this.$store.state.profile.username)
+        })
+      this.$store.dispatch('setIsFriendButton', { user: index, value: 'friend' })
+    },
+    rejectSolicitation (user, index) {
+      db.collection('users').doc(this.$store.state.profile.username)
+        .update({
+          pendingList: firebase.firestore.FieldValue.arrayRemove(user)
+        })
+      this.$store.dispatch('removeFromPendingList', index)
+      this.$store.dispatch('setIsFriendButton', { user: index, value: 'notFriend' })
     }
   },
   beforeMount () {
     this.getFriendsList()
+  },
+  async beforeCreate () {
+    var user = auth.currentUser
+    if (user) {
+      await dbUsers.doc(user.displayName).get().then(doc => {
+        this.$store.dispatch('setProfileInfo', doc.data())
+      })
+    }
   },
   destroyed () {
     this.$store.state.friends = []
@@ -142,5 +183,9 @@ export default {
   font-weight: bold;
   color: black;
 }
-
+.friend-solicitation {
+  width: 300px;
+  margin: 70px auto auto auto;
+  background-color: white;
+}
 </style>
