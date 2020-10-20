@@ -36,7 +36,6 @@ export default {
       }
       this.$store.dispatch('addPost', post)
       event.target.children[0].value = null
-      console.log(event)
     },
     async uploadImageFromForm () {
       var fileURL = await this.uploadFile(event.target.files[0])

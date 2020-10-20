@@ -66,8 +66,10 @@ export default {
             name: this.form.name,
             username: this.form.username,
             email: this.form.email,
-            photo: 'https://firebasestorage.googleapis.com/v0/b/social-network-ed46e.appspot.com/o/douglas.jpeg?alt=media&token=b389217d-5bf4-4a17-b5b6-c097db01ac52',
-            countFriends: 0
+            photo: '',
+            backgroundImg: '',
+            friends: [],
+            pendingList: []
           })
         }).catch(err => {
           this.error = err.message

@@ -1,10 +1,12 @@
 <template>
 <div class="my-profile">
-    <div class="profile-header" v-if="profile.backgroundImg">
-        <img id="background-image" :src="profile.backgroundImg" alt="Background Photo">
+    <div class="profile-header">
+        <img v-if="profile.backgroundImg" id="background-image" :src="profile.backgroundImg" alt="Background Photo">
+        <img v-else id="background-image" src="../assets/images/default-background.jpg" alt="Background Photo">
     </div>
     <div class="div-profile-photo">
-      <img id="profile-photo" :src="profile.photo" alt="Profile Photo">
+      <img v-if="profile.photo" id="profile-photo" :src="profile.photo" alt="Profile Photo">
+      <img v-else id="profile-photo" src="../assets/images/default-user.jpg" alt="Profile Photo">
     </div>
        <div class="user-name" v-text="profile.name"></div>
         <div class="about-box">
@@ -19,13 +21,7 @@
             <div id="address-information"><strong>Living in </strong>{{ profile.city }}, {{ profile.country }}</div>
           </div>
       </div>
-    <div class="profile-body">
-      <div class="photo-album">
-      <div class="photo" v-for="photo in albumPhotos" :key="photo.id">
-        <img :src="photo" alt="photo">
-      </div>
-     </div>
-    </div>
+    <Album />
     <FriendsFeed />
 </div>
 </template>
@@ -34,10 +30,12 @@
 import { mapGetters } from 'vuex'
 import Utils from '../mixins/UtilsMixin'
 import FriendsFeed from './FriendsFeed'
+import Album from '@/components/Album'
 
 export default {
   components: {
-    FriendsFeed
+    FriendsFeed,
+    Album
   },
   computed: {
     ...mapGetters({

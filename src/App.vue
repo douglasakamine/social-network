@@ -16,12 +16,7 @@ export default {
   },
   beforeCreate () {
     auth.onAuthStateChanged(user => {
-      if (user) {
-        console.log('LOGADO')
-      } else {
-        console.log('DESLOGADO')
-        this.resetState()
-      }
+      if (!user) this.resetState()
     })
   },
   mixins: [Utils]

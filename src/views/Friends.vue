@@ -1,14 +1,18 @@
 <template>
 <div class="friends-page">
   <Header />
-  <div class="friend-solicitation" v-for="(pending, index) in pendingList" :key="pending.id">
-    <p>{{ pending }} is inviting you to join friends.</p>
-    <button id="accept-solicitation" @click="acceptSolicitation(pending, index)">Accept</button>
-    <button id="reject-solicitation" @click="rejectSolicitation(pending, index)">Reject</button>
+  <div class="friend-solicitation" v-for="pending in pendingList" :key="pending.id">
+    <p><router-link :to="'/profile/' + pending">{{ pending }}</router-link>
+    is inviting you to join friends.</p>
+    <div class="button-box">
+    <button id="accept-solicitation" @click="acceptSolicitation(pending)">Accept</button>
+    <button id="reject-solicitation" @click="rejectSolicitation(pending)">Reject</button>
+    </div>
   </div>
     <ul class="friends">
     <li class="friend" v-for="(friend, index) in friends" :key="friend.id">
-      <span class="friendPhoto"><img :src="friend.photo" alt="friend photo"></span>
+      <span v-if="friend.photo" class="friendPhoto"><img :src="friend.photo" alt="friend photo"></span>
+      <span v-else class="friendPhoto"><img src="../assets/images/default-user.jpg" alt="friend photo"></span>
       <span class="friendName"><router-link :to="'/profile/' + friend.username">{{ friend.name }}</router-link></span>
       <button @click.prevent="addFriendButton(friend.username, index)" class="btn">{{ buttonAddFriendDescription(friend.isFriend) }}</button>
     </li>
@@ -39,22 +43,24 @@ export default {
       'addFriend'
     ]),
     addFriendButton (friend, index) {
-      console.log(friend, index)
       if (this.$store.state.profile.friends.includes(friend)) {
         dbUsers.doc(this.$store.state.profile.username)
           .update({
             friends: firebase.firestore.FieldValue.arrayRemove(friend)
           })
+        this.$store.dispatch('removeFromUserArrays', { array: 'friends', index: index })
         dbUsers.doc(friend)
           .update({
             friends: firebase.firestore.FieldValue.arrayRemove(this.$store.state.profile.username)
           })
+        this.$store.dispatch('removeFromFriendsArrays', { friendIndex: index, array: 'friends', index: index })
         this.$store.dispatch('setIsFriendButton', { user: index, value: 'notFriend' })
       } else {
         dbUsers.doc(friend)
           .update({
             pendingList: firebase.firestore.FieldValue.arrayUnion(this.$store.state.profile.username)
           })
+        this.$store.dispatch('addIntoFriendsArrays', { friendIndex: index, array: 'pendingList', user: this.$store.state.profile.username })
         this.$store.dispatch('setIsFriendButton', { user: index, value: 'pending' })
       }
     },
@@ -65,35 +71,55 @@ export default {
         case 'pending': return 'Pending'
       }
     },
-    acceptSolicitation (user, index) {
+    acceptSolicitation (pendingUser) {
+      var index = this.$store.state.friends.findIndex(x => x.id === pendingUser)
       db.collection('users').doc(this.$store.state.profile.username)
         .update({
-          pendingList: firebase.firestore.FieldValue.arrayRemove(user)
+          pendingList: firebase.firestore.FieldValue.arrayRemove(pendingUser)
         })
-      this.$store.dispatch('removeFromPendingList', index)
+      this.$store.dispatch('removeFromUserArrays', { array: 'pendingList', index: index })
       db.collection('users').doc(this.$store.state.profile.username)
         .update({
-          friends: firebase.firestore.FieldValue.arrayUnion(user)
+          friends: firebase.firestore.FieldValue.arrayUnion(pendingUser)
         })
-      db.collection('users').doc(user)
+      this.$store.dispatch('addIntoUserArrays', { array: 'friends', user: pendingUser })
+      db.collection('users').doc(pendingUser)
         .update({
           friends: firebase.firestore.FieldValue.arrayUnion(this.$store.state.profile.username)
         })
+      this.$store.dispatch('addIntoFriendsArrays', { friendIndex: index, array: 'friends', user: this.$store.state.profile.username })
       this.$store.dispatch('setIsFriendButton', { user: index, value: 'friend' })
     },
-    rejectSolicitation (user, index) {
+    rejectSolicitation (pendingUser) {
+      var index = this.$store.state.friends.findIndex(x => x.id === pendingUser)
       db.collection('users').doc(this.$store.state.profile.username)
         .update({
-          pendingList: firebase.firestore.FieldValue.arrayRemove(user)
+          pendingList: firebase.firestore.FieldValue.arrayRemove(pendingUser)
         })
-      this.$store.dispatch('removeFromPendingList', index)
+      this.$store.dispatch('removeFromUserArrays', { array: 'pendingList', index: index })
       this.$store.dispatch('setIsFriendButton', { user: index, value: 'notFriend' })
     }
   },
-  beforeMount () {
-    this.getFriendsList()
+  async beforeMount () { // Getting users friends from DB and setting in State vuex
+    await dbUsers.get().then(querySnapshot => {
+      querySnapshot.forEach(users => {
+        if (users.data().username === this.$store.state.profile.username) {
+          return // Skip your own profile
+        }
+        var user = {
+          id: users.id,
+          name: users.data().name,
+          photo: users.data().photo,
+          username: users.data().username,
+          isFriend: 'notFriend',
+          pendingList: users.data().pendingList,
+          friends: users.data().friends
+        }
+        this.$store.dispatch('setUsersList', user)
+      })
+    })
   },
-  async beforeCreate () {
+  async beforeCreate () { // Getting user profile from DB
     var user = auth.currentUser
     if (user) {
       await dbUsers.doc(user.displayName).get().then(doc => {
@@ -185,7 +211,41 @@ export default {
 }
 .friend-solicitation {
   width: 300px;
+  text-align: center;
+  padding: 5px;
   margin: 70px auto auto auto;
   background-color: white;
+  border-radius: 1em;
+  box-shadow: 0 0 0 1px rgba(0,0,0,.15), 0 2px 3px rgba(0,0,0,.2);
+}
+.button-box {
+  display: flex;
+  justify-content: space-between;
+}
+#accept-solicitation {
+    color: white;
+    font-size: 15px;
+    border: none;
+    background-color: #008CBA;
+    font-size: 16px;
+    padding: 5px;
+    text-align: center;
+    text-decoration: none;
+    margin: 4px;
+    border-radius: .2em;
+    cursor: pointer;
+}
+#reject-solicitation {
+    color: white;
+    font-size: 15px;
+    border: none;
+    background-color: red;
+    font-size: 16px;
+    padding: 5px;
+    text-align: center;
+    text-decoration: none;
+    margin: 4px;
+    border-radius: .2em;
+    cursor: pointer;
 }
 </style>

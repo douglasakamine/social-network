@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import firebase from 'firebase'
+import { dbPosts } from '../main'
 
 Vue.use(Vuex)
 
@@ -11,11 +11,8 @@ export default new Vuex.Store({
     posts: [],
     currentImageLink: '',
     friends: [],
-    ads: [{
-      id: '1',
-      adsImage: 'advertising-word-block.jpg',
-      adsDescription: 'Buy this product, Its Awesome!'
-    }]
+    ads: [],
+    editProfileInfoButton: false
   }, // State End
   getters: {
     getFeed (state) { // Get initial Feed
@@ -39,6 +36,9 @@ export default new Vuex.Store({
         }
       })
       return posts
+    },
+    getEditProfileInfoButton (state) { // Return Edit Profile Button (Toggle True or false)
+      return state.editProfileInfoButton
     },
     getFriends (state) {
       return state.friends
@@ -75,7 +75,7 @@ export default new Vuex.Store({
     updateProfileState (state, updateData) {
       state.profile[updateData.data] = updateData.value
     },
-    setFriendsList (state, friend) {
+    setUsersList (state, friend) {
       if (state.profile.friends.includes(friend.id)) {
         friend.isFriend = 'friend'
       } else if (state.profile.pendingList.includes(friend.id) ||
@@ -88,27 +88,39 @@ export default new Vuex.Store({
       state.friendProfile = userData
     },
     setIsFriendButton (state, payload) {
-      console.log(payload)
       state.friends[payload.user].isFriend = payload.value
     },
-    removeFromPendingList (state, index) {
-      state.profile.pendingList.splice(index)
+    removeFromUserArrays (state, data) { // Remove data from arrays inside Profile user
+      state.profile[data.array].splice(data.index)
+    },
+    addIntoUserArrays (state, data) { // add data into arrays inside Profile user
+      state.profile[data.array].push(data.user)
+    },
+    removeFromFriendsArrays (state, data) { // Remove data from arrays inside Friend user
+      state.friends[data.friendIndex][data.array].splice(data.index)
+    },
+    addIntoFriendsArrays (state, data) { // add data into arrays inside Friend user
+      state.friends[data.friendIndex][data.array].push(data.user)
+    },
+    SetEditProfileInfoButton (state, bool) {
+      state.editProfileInfoButton = bool
+    },
+    setAdsToState (state, ads) {
+      state.ads.push(ads)
     }
   }, // Mutations End
   actions: {
     addPost: ({ commit }, post) => {
-      firebase.firestore().collection('posts').doc()
+      dbPosts.doc()
         .set(post)
         .then(function () {
-          console.log('Document successfully written!')
+          commit('appendPost', post)
         })
         .catch(function (error) {
           console.error('Error writing document: ', error)
         })
-      commit('appendPost', post)
     },
-    setProfileInfo: ({ commit }, userData) => {
-      console.log('SET PROFILE INFO')
+    setProfileInfo: ({ commit }, userData) => { // Initial profile informations
       commit('setProfileInfo', userData)
     },
     setFeed: ({ commit }, posts) => {
@@ -120,8 +132,8 @@ export default new Vuex.Store({
     updateProfileInfo: ({ commit }, updateData) => {
       commit('updateProfileState', updateData)
     },
-    setFriendsList: ({ commit }, user) => {
-      commit('setFriendsList', user)
+    setUsersList: ({ commit }, user) => {
+      commit('setUsersList', user)
     },
     setFriendProfile: ({ commit }, userData) => {
       commit('setFriendProfile', userData)
@@ -129,8 +141,23 @@ export default new Vuex.Store({
     setIsFriendButton: ({ commit }, payload) => {
       commit('setIsFriendButton', payload)
     },
-    removeFromPendingList: ({ commit }, index) => {
-      commit('removeFromPendingList', index)
+    removeFromUserArrays: ({ commit }, data) => {
+      commit('removeFromUserArrays', data)
+    },
+    addIntoUserArrays: ({ commit }, data) => {
+      commit('addIntoUserArrays', data)
+    },
+    removeFromFriendsArrays: ({ commit }, data) => {
+      commit('removeFromFriendsArrays', data)
+    },
+    addIntoFriendsArrays: ({ commit }, data) => {
+      commit('addIntoFriendsArrays', data)
+    },
+    SetEditProfileInfoButton: ({ commit }, bool) => {
+      commit('SetEditProfileInfoButton', bool)
+    },
+    setAdsToState: ({ commit }, ads) => {
+      commit('setAdsToState', ads)
     }
   } // Actions End
 }) // Vuex End

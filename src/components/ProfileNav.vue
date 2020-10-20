@@ -1,6 +1,7 @@
 <template>
   <aside v-if="profile" id="profileNav" v-cloak>
-    <img v-cloak id="profilePhoto" :src="profile.photo" alt="avatar">
+    <img v-if="profile.photo" v-cloak id="profilePhoto" :src="profile.photo" alt="avatar">
+    <img v-else id="profilePhoto" src="../assets/images/default-user.jpg" alt="avatar">
      <hr style="color:black">
     <div><h3><router-link :to="'/profile/' + profile.username">{{ profile.name }}</router-link></h3></div>
     <div><p><strong>Work at:</strong> {{ profile.work }}</p></div>

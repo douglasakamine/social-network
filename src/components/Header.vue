@@ -60,7 +60,7 @@ export default {
     text-align: center;
     top: 0;
     left: 0;
-    z-index: 9999;
+    z-index: 9000;
 }
 
 .headerNav {

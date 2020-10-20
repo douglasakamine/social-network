@@ -3,13 +3,13 @@ import { st, dbUsers, dbPosts } from '../main'
 export default {
   methods: {
     async uploadFile (rawFile) {
-      var uploadTask = st.child(rawFile.name).put(rawFile)
-      var url = await uploadTask.snapshot.ref.getDownloadURL().then(downloadURL => {
+      await st.child(rawFile.name).put(rawFile)
+      var url = await st.child(rawFile.name).getDownloadURL().then(downloadURL => {
         return downloadURL
       })
       return url
     },
-    async updateProfile (payload) {
+    updateProfile (payload) {
       var data = payload.data
       var value = payload.value
       dbUsers.doc(this.$store.state.profile.username).update({ [data]: value })
@@ -19,25 +19,6 @@ export default {
         .catch(error => {
           console.error('Error writing document: ', error)
         })
-    },
-    getFriendsList () {
-      dbUsers.get().then(querySnapshot => {
-        querySnapshot.forEach(users => {
-          if (users.data().username === this.$store.state.profile.username) {
-            return // Skip your own profile
-          }
-          var user = {
-            id: users.id,
-            name: users.data().name,
-            photo: users.data().photo,
-            username: users.data().username,
-            isFriend: 'notFriend',
-            pendingList: users.data().pendingList,
-            friends: users.data().friends
-          }
-          this.$store.dispatch('setFriendsList', user)
-        })
-      })
     },
     async getUserFriendData (user) {
       await dbUsers.doc(user).get().then(doc => {
@@ -70,11 +51,8 @@ export default {
         posts: [],
         currentImageLink: '',
         friends: [],
-        ads: [{
-          id: '1',
-          adsImage: 'advertising-word-block.jpg',
-          adsDescription: 'Buy this product, Its Awesome!'
-        }]
+        ads: [],
+        editProfileInfoButton: false
       })
     }
   }

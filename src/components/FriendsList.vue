@@ -2,36 +2,16 @@
     <section class="friends-box">
         <ul class="friend-list">
             <li class="friend-li">
-                <img src="../assets/images/john.jpeg" alt="">
+                <img src="" alt="">
                 <p>Friend 1</p>
                 </li>
                  <li class="friend-li">
-                <img src="../assets/images/batman.png" alt="">
+                <img src="" alt="">
                 <p>Friend 2</p>
                 </li>
                  <li class="friend-li">
-                <img src="../assets/images/rick-grimes.jpg" alt="">
+                <img src="" alt="">
                 <p>Friend 3</p>
-                </li>
-                 <li class="friend-li">
-                <img src="../assets/images/luke.jpeg" alt="">
-                <p>Friend 4</p>
-                </li>
-                 <li class="friend-li">
-                <img src="../assets/images/batman.png" alt="">
-                <p>Friend 5</p>
-                </li>
-                 <li class="friend-li">
-                <img src="../assets/images/rick-grimes.jpg" alt="">
-                <p>Friend 6</p>
-                </li>
-                 <li class="friend-li">
-                <img src="../assets/images/john.jpeg" alt="">
-                <p>Friend 7</p>
-                </li>
-                 <li class="friend-li">
-                <img src="../assets/images/john.jpeg" alt="">
-                <p>Friend 8</p>
                 </li>
         </ul>
     </section>

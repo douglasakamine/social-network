@@ -1,23 +1,32 @@
 <template>
-  <aside id="sidebar">
-    <img id="ads" :src="require(`../assets/images/` + ads[0].adsImage )" alt="Ads Image">
+  <aside id="sidebar" v-if="ads" v-cloak>
+    <div v-for="(ad) in ads" :key="ad.id">
+    <img id="ads" :src="ad.adsImage" alt="Ads Image">
       <div><h2>Advertising here</h2></div>
-      <div><p>{{ ads[0].adsDescription }}</p></div>
+      <div><p>{{ ad.adsDescription }}</p></div>
             <footer>
                 <p>Social Network Corporation © 2020</p>
                 <p>Project Developed by Douglas Akamine</p>
             </footer>
-
+        </div>
         </aside>
 </template>
 
 <script>
 import { mapGetters } from 'vuex'
+import { db } from '../main'
 
 export default {
   computed: {
     ...mapGetters({
       ads: 'getAds'
+    })
+  },
+  created () {
+    db.collection('ads').get().then(snapshot => {
+      snapshot.forEach(doc => {
+        this.$store.dispatch('setAdsToState', doc.data())
+      })
     })
   }
 }
