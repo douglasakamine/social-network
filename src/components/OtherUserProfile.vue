@@ -1,5 +1,5 @@
 <template>
-<div class="my-profile">
+<div class="my-profile" v-cloak>
     <div class="profile-header">
         <img v-if="profile.backgroundImg" id="background-image" :src="profile.backgroundImg" alt="Background Photo">
         <img v-else id="background-image" src="../assets/images/default-background.jpg" alt="Background Photo">
@@ -10,15 +10,15 @@
     </div>
        <div class="user-name" v-text="profile.name"></div>
         <div class="about-box">
-         <div class="information-about">
-            <div><strong>Profile Description</strong></div>
-            <span>{{ profile.description }}</span>
-          </div>
           <div class="information">
             <div id="work-information"><strong>Work at </strong>{{ profile.work }}</div>
             <div id="birth-information"><strong>Birth </strong>{{ profile.birth }}</div>
             <div v-if="profile.friends" id="friends-information"><strong>{{ profile.friends.length }}</strong> Friends</div>
             <div id="address-information"><strong>Living in </strong>{{ profile.city }}, {{ profile.country }}</div>
+          </div>
+         <div class="information-about">
+            <div><strong>Profile Description</strong></div>
+            <span>{{ profile.description }}</span>
           </div>
       </div>
     <Album />
@@ -52,6 +52,9 @@ export default {
 </script>
 
 <style scoped>
+[v-cloak] {
+  display: none;
+}
 .profile-body {
   margin: 5px auto auto auto;
   border-radius: 1em;

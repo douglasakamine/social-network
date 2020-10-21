@@ -3,8 +3,8 @@
     <div class="profile-header">
       <button id="upload-background" @click="$refs.backgroundInput.click()"><i class="fas fa-camera"> Change Background</i></button>
       <input id="input-upload-background" @change="changeProfileImages('backgroundImg')" type="file" style="display: none" ref="backgroundInput">
-        <img v-if="profile.backgroundImg" id="background-image" :src="profile.backgroundImg" alt="Background Photo">
-        <img v-else id="background-image-substitute" src="../assets/images/default-background.jpg" alt="Background Photo">
+        <img v-if="profile.backgroundImg" id="background-image" :src="profile.backgroundImg" alt="Background Photo" v-cloak>
+        <img v-else id="background-image-substitute" src="../assets/images/default-background.jpg" alt="Background Photo" v-cloak>
     </div>
     <div class="div-profile-photo">
       <img v-if="profile.photo" id="profile-photo" :src="profile.photo" alt="Profile Photo">
@@ -15,15 +15,15 @@
        <div class="user-name" v-text="profile.name"></div>
        <i @click="openEditProfile" id="edit-name" class="far fa-edit"> Edit Profile</i>
         <div class="about-box">
-         <div class="information-about">
-            <div><strong>Profile Description</strong></div>
-            <span>{{ profile.description }}</span>
-          </div>
           <div class="information">
             <div id="work-information"><strong>Work at </strong>{{ profile.work }}</div>
             <div id="birth-information"><strong>Birth </strong>{{ profile.birth }}</div>
             <div v-if="profile.friends" id="friends-information"><strong>{{ profile.friends.length }}</strong> Friends</div>
             <div id="address-information"><strong>Living in </strong>{{ profile.city }}, {{ profile.country }}</div>
+          </div>
+         <div class="information-about">
+            <div><strong>Profile Description</strong></div>
+            <span>{{ profile.description }}</span>
           </div>
       </div>
       <Album />

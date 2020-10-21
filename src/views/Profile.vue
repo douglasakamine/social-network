@@ -1,8 +1,8 @@
 <template>
 <div class="profile" v-cloak>
     <Header />
-    <MyProfile v-if="profileRoute"></MyProfile>
-    <OtherUserProfile v-else></OtherUserProfile>
+    <MyProfile v-if="profileRoute" v-cloak></MyProfile>
+    <OtherUserProfile v-else v-cloak></OtherUserProfile>
 </div>
 </template>
 

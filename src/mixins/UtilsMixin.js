@@ -31,7 +31,9 @@ export default {
         dbPosts.where('username', '==', friend)
           .get().then(querySnapshot => {
             querySnapshot.forEach(doc => {
-              this.$store.dispatch('setFeed', doc.data())
+              var post = doc.data()
+              post.id = doc.id
+              this.$store.dispatch('setFeed', post)
             })
           })
       })
@@ -40,7 +42,9 @@ export default {
       dbPosts.where('username', '==', this.$store.getters.getProfileInfo.username)
         .get().then(querySnapshot => {
           querySnapshot.forEach(doc => {
-            this.$store.dispatch('setFeed', doc.data())
+            var post = doc.data()
+            post.id = doc.id
+            this.$store.dispatch('setFeed', post)
           })
         })
     },

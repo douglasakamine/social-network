@@ -32,7 +32,8 @@ export default {
         username: this.$store.state.profile.username,
         content: event.target.children[0].value.replace(/\n\r?/g, '<br />'),
         file: this.$store.state.currentImageLink,
-        likes: []
+        likes: [],
+        likeBox: false
       }
       this.$store.dispatch('addPost', post)
       event.target.children[0].value = null

@@ -107,6 +107,16 @@ export default new Vuex.Store({
     },
     setAdsToState (state, ads) {
       state.ads.push(ads)
+    },
+    updateLikes (state, index) {
+      state.posts[index].likes.push(state.profile.username)
+    },
+    removeLikes (state, index) {
+      var userIndex = state.posts[index].likes.findIndex(x => x.id === state.profile.username)
+      state.posts[index].likes.splice(userIndex)
+    },
+    toggleLikeBox (state, payload) {
+      state.posts[payload.index].likeBox = payload.bool
     }
   }, // Mutations End
   actions: {
@@ -158,6 +168,15 @@ export default new Vuex.Store({
     },
     setAdsToState: ({ commit }, ads) => {
       commit('setAdsToState', ads)
+    },
+    updateLikes: ({ commit }, index) => {
+      commit('updateLikes', index)
+    },
+    removeLikes: ({ commit }, index) => {
+      commit('removeLikes', index)
+    },
+    toggleLikeBox: ({ commit }, payload) => {
+      commit('toggleLikeBox', payload)
     }
   } // Actions End
 }) // Vuex End
