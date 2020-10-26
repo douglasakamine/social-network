@@ -62,7 +62,7 @@ export default {
       this.closeEditProfileInfoButton()
     },
     closeEditProfileInfoButton () {
-      this.$store.dispatch('SetEditProfileInfoButton', false)
+      this.$store.dispatch('setEditProfileInfoButton', false)
     }
   },
   mixins: [Utils]

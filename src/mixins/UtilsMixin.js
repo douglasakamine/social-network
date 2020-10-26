@@ -22,7 +22,16 @@ export default {
     },
     async getUserFriendData (user) {
       await dbUsers.doc(user).get().then(doc => {
-        this.$store.dispatch('setFriendProfile', doc.data())
+        var user = doc.data()
+        if (this.$store.state.profile.friends.includes(doc.data().username)) {
+          user.isFriend = 'friend'
+        } else if (this.$store.state.profile.pendingList.includes(doc.data().username) ||
+        doc.data().pendingList.includes(this.$store.state.profile.username)) {
+          user.isFriend = 'pending'
+        } else {
+          user.isFriend = 'notFriend'
+        }
+        this.$store.dispatch('setFriendProfile', user)
       })
     },
     getFriendsPosts () {
@@ -56,7 +65,9 @@ export default {
         currentImageLink: '',
         friends: [],
         ads: [],
-        editProfileInfoButton: false
+        editProfileInfoButton: false,
+        buttonAlbum: false,
+        clickedPhoto: 0
       })
     }
   }

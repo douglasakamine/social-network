@@ -12,33 +12,20 @@ export default new Vuex.Store({
     currentImageLink: '',
     friends: [],
     ads: [],
-    editProfileInfoButton: false
+    editProfileInfoButton: false,
+    buttonAlbum: false,
+    clickedPhoto: 0
   }, // State End
   getters: {
     getFeed (state) { // Get initial Feed
       var newPost = state.posts.sort((a, b) => new Date(b.date) - new Date(a.date))
       return newPost
     },
-    getFriendsPosts (state) { // Get individual posts of friends page
-      var posts = []
-      state.posts.forEach(post => {
-        if (post.username === state.friendProfile.username) {
-          posts.push(post)
-        }
-      })
-      return posts
-    },
-    getMyPosts (state) { // Get my individual posts of profile page
-      var posts = []
-      state.posts.forEach(post => {
-        if (post.username === state.profile.username) {
-          posts.push(post)
-        }
-      })
-      return posts
-    },
     getEditProfileInfoButton (state) { // Return Edit Profile Button (Toggle True or false)
       return state.editProfileInfoButton
+    },
+    getButtonAlbum (state) { // Return Edit Profile Button (Toggle True or false)
+      return state.buttonAlbum
     },
     getFriends (state) {
       return state.friends
@@ -49,19 +36,22 @@ export default new Vuex.Store({
     getProfileInfo (state) {
       return state.profile
     },
-    getAlbumPhotos (state) {
-      return state.profile.album
-    },
     getFriendProfile (state) {
       return state.friendProfile
     },
     getPendingList (state) {
       return state.profile.pendingList
+    },
+    getClickedPhoto (state) {
+      return state.clickedPhoto
     }
   }, // Getters End
   mutations: {
     appendPost (state, postItem) {
       state.posts.push(postItem)
+    },
+    removePost (state, index) {
+      state.posts.splice(index, 1)
     },
     setProfileInfo (state, userData) {
       state.profile = userData
@@ -91,19 +81,22 @@ export default new Vuex.Store({
       state.friends[payload.user].isFriend = payload.value
     },
     removeFromUserArrays (state, data) { // Remove data from arrays inside Profile user
-      state.profile[data.array].splice(data.index)
+      state.profile[data.array].splice(data.index, 1)
     },
     addIntoUserArrays (state, data) { // add data into arrays inside Profile user
       state.profile[data.array].push(data.user)
     },
     removeFromFriendsArrays (state, data) { // Remove data from arrays inside Friend user
-      state.friends[data.friendIndex][data.array].splice(data.index)
+      state.friends[data.friendIndex][data.array].splice(data.index, 1)
     },
     addIntoFriendsArrays (state, data) { // add data into arrays inside Friend user
       state.friends[data.friendIndex][data.array].push(data.user)
     },
-    SetEditProfileInfoButton (state, bool) {
+    setEditProfileInfoButton (state, bool) {
       state.editProfileInfoButton = bool
+    },
+    setButtonAlbum (state, bool) {
+      state.buttonAlbum = bool
     },
     setAdsToState (state, ads) {
       state.ads.push(ads)
@@ -117,17 +110,22 @@ export default new Vuex.Store({
     },
     toggleLikeBox (state, payload) {
       state.posts[payload.index].likeBox = payload.bool
+    },
+    setClickedPhoto (state, index) {
+      state.clickedPhoto = index
+    },
+    addPhotoToAlbum (state, file) {
+      state.profile.album.push(file)
     }
   }, // Mutations End
   actions: {
     addPost: ({ commit }, post) => {
-      dbPosts.doc()
-        .set(post)
-        .then(function () {
-          commit('appendPost', post)
-        })
+      dbPosts.add(post).then(function (docRef) {
+        post.id = docRef.id
+        commit('appendPost', post)
+      })
         .catch(function (error) {
-          console.error('Error writing document: ', error)
+          console.error('Error adding document: ', error)
         })
     },
     setProfileInfo: ({ commit }, userData) => { // Initial profile informations
@@ -163,8 +161,11 @@ export default new Vuex.Store({
     addIntoFriendsArrays: ({ commit }, data) => {
       commit('addIntoFriendsArrays', data)
     },
-    SetEditProfileInfoButton: ({ commit }, bool) => {
-      commit('SetEditProfileInfoButton', bool)
+    setEditProfileInfoButton: ({ commit }, bool) => {
+      commit('setEditProfileInfoButton', bool)
+    },
+    setButtonAlbum: ({ commit }, bool) => {
+      commit('setButtonAlbum', bool)
     },
     setAdsToState: ({ commit }, ads) => {
       commit('setAdsToState', ads)
@@ -177,6 +178,15 @@ export default new Vuex.Store({
     },
     toggleLikeBox: ({ commit }, payload) => {
       commit('toggleLikeBox', payload)
+    },
+    setClickedPhoto: ({ commit }, index) => {
+      commit('setClickedPhoto', index)
+    },
+    addPhotoToAlbum: ({ commit }, file) => {
+      commit('addPhotoToAlbum', file)
+    },
+    removePost: ({ commit }, index) => {
+      commit('removePost', index)
     }
   } // Actions End
 }) // Vuex End

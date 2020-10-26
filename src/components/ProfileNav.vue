@@ -43,6 +43,7 @@ export default {
     width: 170px;
     height: 170px;
     overflow: hidden;
+    object-fit: cover;
     margin: 5px;
     border: none;
     border-radius: 50%;

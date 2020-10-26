@@ -1,6 +1,7 @@
 <template>
 <div id="feed">
             <div class="post" v-for="(post, index) in posts" :key="post.id">
+              <i @click="deletePost(post.id, index)" title="Delete post" v-show="post.username === user" class="fas fa-times"></i>
               <div class="post-header">
               <img id="photo" :src="post.photo">
                 <h3><router-link :to="'/profile/' + post.username">{{ post.name }}</router-link></h3>
@@ -8,6 +9,7 @@
                 </div>
                 <div class="post-content"><span v-html="post.content"></span></div>
                 <img id="postImage" :src="post.file">
+                <hr>
                 <div class="like-box">
                   <a class="like-button" @click="like(post.id, index, post.likes)"><i class="far fa-thumbs-up fa-2x">
                   </i><strong>{{ likeDescription(post.likes) }}</strong></a>
@@ -27,6 +29,11 @@ import { dbPosts } from '../main'
 import firebase from 'firebase'
 
 export default {
+  data () {
+    return {
+      user: this.$store.state.profile.username
+    }
+  },
   computed: {
     ...mapGetters({
       posts: 'getFeed'
@@ -61,6 +68,14 @@ export default {
       } else {
         this.$store.dispatch('toggleLikeBox', { index: index, bool: true })
       }
+    },
+    deletePost (id, index) {
+      dbPosts.doc(id).delete().then(() => {
+        console.log('Document successfully deleted!')
+        this.$store.dispatch('removePost', index)
+      }).catch(function (error) {
+        console.error('Error removing document: ', error)
+      })
     }
   }
 }
@@ -115,12 +130,13 @@ export default {
   text-align: right;
 }
 .like-box {
+  padding-left: 15px;
+  padding-right: 15px;
   display: flex;
   justify-content: flex-start;
   position: relative;
 }
 .like-button {
-  margin: 2px;
   cursor: pointer;
 }
 .likes {
@@ -137,5 +153,11 @@ export default {
   left: 65px;
   font-weight: bold;
   box-shadow: 0 0 0 1px rgba(0,0,0,.15), 0 2px 3px rgba(0,0,0,.2);
+}
+.fa-times {
+  float: right;
+  margin: 1px 10px 1px 1px;
+  font-size: 18px;
+  cursor: pointer;
 }
 </style>

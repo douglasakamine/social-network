@@ -1,17 +1,15 @@
 <template>
          <div class="album-body">
-           <i @click="$refs.uploadAlbum.click()" class="fas fa-plus"></i>
-           <input id="input-upload-album" @change="uploadAlbum()" type="file" style="display: none" ref="uploadAlbum">
            <div class="album-title">Fotos</div>
-      <div v-if="myProfilePhotos.album" class="photo-album">
-      <div class="photo" v-for="(photo, index) in myProfilePhotos.album.slice(0, 6)" :key="photo.id">
+     <div v-if="friendsPhotos.album" class="photo-album">
+      <div class="photo" v-for="(photo, index) in friendsPhotos.album.slice(0, 4)" :key="photo.id">
         <img :src="photo" alt="photo" @click="openPhoto(index)">
       </div>
      </div>
      <div v-if="buttonAlbumStatus" class="slideshow-container">
         <div class="close-button-box"><i @click="closePhoto" class="far fa-window-close fa-3x" style="color: white"></i></div>
        <div class="fade">
-    <img :src="myProfilePhotos.album[clickedPhoto]">
+    <img :src="friendsPhotos.album[clickedPhoto]">
       </div>
      <a class="prev" @click="plusSlides(-1)">&#10094;</a>
       <a class="next" @click="plusSlides(1)">&#10095;</a>
@@ -21,14 +19,11 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import { dbUsers } from '../main'
-import firebase from 'firebase'
-import Utils from '../mixins/UtilsMixin'
 
 export default {
   computed: {
     ...mapGetters({
-      myProfilePhotos: 'getProfileInfo',
+      friendsPhotos: 'getFriendProfile',
       buttonAlbumStatus: 'getButtonAlbum',
       clickedPhoto: 'getClickedPhoto'
     })
@@ -40,26 +35,17 @@ export default {
     },
     plusSlides (num) {
       var nextPhoto = this.clickedPhoto + num
-      if (nextPhoto >= this.myProfilePhotos.album.length) {
+      if (nextPhoto >= this.friendsPhotos.album.length) {
         nextPhoto = 0
       } else if (nextPhoto <= -1) {
-        nextPhoto = this.myProfilePhotos.album.length - 1
+        nextPhoto = this.friendsPhotos.album.length - 1
       }
       this.$store.dispatch('setClickedPhoto', nextPhoto)
     },
     closePhoto () {
       this.$store.dispatch('setButtonAlbum', false)
-    },
-    async uploadAlbum () {
-      var fileURL = await this.uploadFile(event.target.files[0])
-      dbUsers.doc(this.$store.state.profile.username)
-        .update({
-          album: firebase.firestore.FieldValue.arrayUnion(fileURL)
-        })
-      this.$store.dispatch('addPhotoToAlbum', fileURL)
     }
-  },
-  mixins: [Utils]
+  }
 }
 </script>
 
@@ -96,7 +82,6 @@ export default {
   object-fit: cover;
   border-radius: .4em;
 }
-
 /* Slideshow container */
 .slideshow-container {
   position: fixed;
@@ -199,11 +184,6 @@ export default {
 @-webkit-keyframes fade {
   from {opacity: .4}
   to {opacity: 1}
-}
-.fa-plus {
-  float: right;
-  margin: 10px;
-  cursor: pointer;
 }
 
 @keyframes fade {

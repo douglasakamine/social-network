@@ -11,7 +11,7 @@
     <h1>Social Network</h1>
     <p>A Project made in Vue Js and Firebase</p>
     <p>Developed by Douglas Akamine</p>
-    <p>Available at <a href="https://github.com/douglasakamine" target="_blank">GitHub</a></p>
+    <p>Available at my <a href="https://github.com/douglasakamine" target="_blank">GitHub</a></p>
    </div>
 <div class="sigin-form-box">
   <h2>Create an Account</h2>
@@ -21,6 +21,10 @@
     <input type="email" id="email-form" v-model="form.email" placeholder="Email">
     <input type="password" id="password-form" v-model="form.password" placeholder="Password">
     <button type="submit" id="signin-button">Sign Up</button>
+    <div v-show="success" class="alert">
+  <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+  <strong>Account successfully created!</strong> Please log in.
+</div>
 </form>
 </div>
 </section>
@@ -34,6 +38,7 @@ export default {
   mixins: [Utils],
   data () {
     return {
+      success: false,
       user: {
         email: '',
         password: ''
@@ -66,13 +71,24 @@ export default {
             name: this.form.name,
             username: this.form.username,
             email: this.form.email,
-            photo: '',
-            backgroundImg: '',
+            photo: 'https://firebasestorage.googleapis.com/v0/b/social-network-ed46e.appspot.com/o/default-user.jpg?alt=media&token=8adfe6a7-64a5-4f74-aa1f-ab9f34aa6ad9',
+            backgroundImg: 'https://firebasestorage.googleapis.com/v0/b/social-network-ed46e.appspot.com/o/default-background.jpg?alt=media&token=e91f1bcb-9436-4b36-a9de-a4ec1b243b70',
             friends: [],
-            pendingList: []
+            pendingList: [],
+            album: [],
+            birth: '',
+            city: '',
+            country: '',
+            description: '',
+            work: ''
           })
+          this.form.name = ''
+          this.form.username = ''
+          this.form.email = ''
+          this.form.password = ''
+          this.success = true
         }).catch(err => {
-          this.error = err.message
+          alert(this.error = err.message)
         })
     }
   }
@@ -157,5 +173,25 @@ export default {
     margin: 4px;
     border-radius: .2em;
     cursor: pointer;
+}
+.alert {
+  padding: 20px;
+  background-color: green;
+  color: white;
+}
+
+.closebtn {
+  margin-left: 15px;
+  color: white;
+  font-weight: bold;
+  float: right;
+  font-size: 22px;
+  line-height: 20px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.closebtn:hover {
+  color: black;
 }
 </style>
