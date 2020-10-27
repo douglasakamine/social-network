@@ -59,7 +59,7 @@
 
 <script>
 import Header from '@/components/Header'
-import { auth, dbUsers } from '../main'
+import { auth, dbUsers, dbPosts } from '../main'
 import Utils from '../mixins/UtilsMixin'
 import EditProfileForm from '@/components/EditProfileForm'
 import MyFeed from '@/components/MyFeed'
@@ -99,27 +99,24 @@ export default {
       this.$store.dispatch('setEditProfileInfoButton', true)
     },
     addFriendButton () {
-      var friend = this.$route.params.id
+      var friend = this.friendProfile.username
       if (this.$store.state.profile.friends.includes(friend)) {
         dbUsers.doc(this.$store.state.profile.username)
           .update({
             friends: firebase.firestore.FieldValue.arrayRemove(friend)
           })
-        var index = this.$store.state.profile.friends.findIndex(x => x.id === friend)
-        this.$store.dispatch('removeFromUserArrays', { array: 'friends', index: index })
+        this.$store.dispatch('removeFromUserArrays', { array: 'friends', user: friend })
         dbUsers.doc(friend)
           .update({
             friends: firebase.firestore.FieldValue.arrayRemove(this.$store.state.profile.username)
           })
-        // this.$store.dispatch('removeFromProfileFriendArray', { index: index })
-        // this.$store.dispatch('setIsFriendButton', { user: index, value: 'notFriend' })
+        this.$store.dispatch('setIsFriendButtonOnProfile', 'notFriend')
       } else {
         dbUsers.doc(friend)
           .update({
             pendingList: firebase.firestore.FieldValue.arrayUnion(this.$store.state.profile.username)
           })
-        // this.$store.dispatch('addIntoFriendsArrays', { friendIndex: index, array: 'pendingList', user: this.$store.state.profile.username })
-        // this.$store.dispatch('setIsFriendButton', { user: index, value: 'pending' })
+        this.$store.dispatch('setIsFriendButtonOnProfile', 'pending')
       }
     },
     buttonAddFriendDescription (isFriend) {
@@ -141,7 +138,14 @@ export default {
         this.getMyPosts()
       } else {
         await this.getUserFriendData(this.$route.params.id)
-        this.getFriendsPosts()
+        dbPosts.where('username', '==', this.$route.params.id)
+          .get().then(querySnapshot => {
+            querySnapshot.forEach(doc => {
+              var post = doc.data()
+              post.id = doc.id
+              this.$store.dispatch('setFeed', post)
+            })
+          })
       }
     }
   },

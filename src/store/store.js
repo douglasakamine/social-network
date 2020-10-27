@@ -80,14 +80,19 @@ export default new Vuex.Store({
     setIsFriendButton (state, payload) {
       state.friends[payload.user].isFriend = payload.value
     },
+    setIsFriendButtonOnProfile (state, value) {
+      state.friendProfile.isFriend = value
+    },
     removeFromUserArrays (state, data) { // Remove data from arrays inside Profile user
-      state.profile[data.array].splice(data.index, 1)
+      var userIndex = state.profile[data.array].findIndex(x => x.id === data.user)
+      state.profile[data.array].splice(userIndex, 1)
     },
     addIntoUserArrays (state, data) { // add data into arrays inside Profile user
       state.profile[data.array].push(data.user)
     },
     removeFromFriendsArrays (state, data) { // Remove data from arrays inside Friend user
-      state.friends[data.friendIndex][data.array].splice(data.index, 1)
+      var userIndex = state.friends[data.friendIndex][data.array].findIndex(x => x.id === state.profile.username)
+      state.friends[data.friendIndex][data.array].splice(userIndex, 1)
     },
     addIntoFriendsArrays (state, data) { // add data into arrays inside Friend user
       state.friends[data.friendIndex][data.array].push(data.user)
@@ -187,6 +192,9 @@ export default new Vuex.Store({
     },
     removePost: ({ commit }, index) => {
       commit('removePost', index)
+    },
+    setIsFriendButtonOnProfile: ({ commit }, value) => {
+      commit('setIsFriendButtonOnProfile', value)
     }
   } // Actions End
 }) // Vuex End

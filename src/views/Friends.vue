@@ -1,17 +1,18 @@
 <template>
 <div class="friends-page">
   <Header />
-  <div class="friend-solicitation" v-for="pending in pendingList" :key="pending.id">
+  <div class="friend-solicitation" v-for="(pending, index) in pendingList" :key="pending.id">
     <p><router-link :to="'/profile/' + pending">{{ pending }}</router-link>
     is inviting you to join friends.</p>
     <div class="button-box">
-    <button id="accept-solicitation" @click="acceptSolicitation(pending)">Accept</button>
-    <button id="reject-solicitation" @click="rejectSolicitation(pending)">Reject</button>
+    <button id="accept-solicitation" @click="acceptSolicitation(pending, index)">Accept</button>
+    <button id="reject-solicitation" @click="rejectSolicitation(pending, index)">Reject</button>
     </div>
   </div>
     <ul class="friends">
     <li class="friend" v-for="(friend, index) in friends" :key="friend.id">
-      <span v-if="friend.photo" class="friendPhoto"><img :src="friend.photo" alt="friend photo"></span>
+      <span v-if="friend.photo" class="friendPhoto"><router-link :to="'/profile/' + friend.username">
+      <img :src="friend.photo" alt="friend photo"></router-link></span>
       <span v-else class="friendPhoto"><img src="../assets/images/default-user.jpg" alt="friend photo"></span>
       <span class="friendName"><router-link :to="'/profile/' + friend.username">{{ friend.name }}</router-link></span>
       <button @click.prevent="addFriendButton(friend.username, index)" class="btn">{{ buttonAddFriendDescription(friend.isFriend) }}</button>
@@ -48,12 +49,12 @@ export default {
           .update({
             friends: firebase.firestore.FieldValue.arrayRemove(friend)
           })
-        this.$store.dispatch('removeFromUserArrays', { array: 'friends', index: index })
+        this.$store.dispatch('removeFromUserArrays', { array: 'friends', user: friend })
         dbUsers.doc(friend)
           .update({
             friends: firebase.firestore.FieldValue.arrayRemove(this.$store.state.profile.username)
           })
-        this.$store.dispatch('removeFromFriendsArrays', { friendIndex: index, array: 'friends', index: index })
+        this.$store.dispatch('removeFromFriendsArrays', { friendIndex: index, array: 'friends', user: this.$store.state.profile.username })
         this.$store.dispatch('setIsFriendButton', { user: index, value: 'notFriend' })
       } else {
         dbUsers.doc(friend)
@@ -71,13 +72,15 @@ export default {
         case 'pending': return 'Pending'
       }
     },
-    acceptSolicitation (pendingUser) {
-      var index = this.$store.state.friends.findIndex(x => x.id === pendingUser)
+    acceptSolicitation (pendingUser, pendingListIndex) {
+      console.log(this.$store.state.friends)
+      var index = this.$store.state.friends.findIndex((x) => x.id === pendingUser)
+      console.log(index)
       db.collection('users').doc(this.$store.state.profile.username)
         .update({
           pendingList: firebase.firestore.FieldValue.arrayRemove(pendingUser)
         })
-      this.$store.dispatch('removeFromUserArrays', { array: 'pendingList', index: index })
+      this.$store.dispatch('removeFromUserArrays', { array: 'pendingList', index: pendingListIndex })
       db.collection('users').doc(this.$store.state.profile.username)
         .update({
           friends: firebase.firestore.FieldValue.arrayUnion(pendingUser)
@@ -90,13 +93,13 @@ export default {
       this.$store.dispatch('addIntoFriendsArrays', { friendIndex: index, array: 'friends', user: this.$store.state.profile.username })
       this.$store.dispatch('setIsFriendButton', { user: index, value: 'friend' })
     },
-    rejectSolicitation (pendingUser) {
+    rejectSolicitation (pendingUser, pendingListIndex) {
       var index = this.$store.state.friends.findIndex(x => x.id === pendingUser)
       db.collection('users').doc(this.$store.state.profile.username)
         .update({
           pendingList: firebase.firestore.FieldValue.arrayRemove(pendingUser)
         })
-      this.$store.dispatch('removeFromUserArrays', { array: 'pendingList', index: index })
+      this.$store.dispatch('removeFromUserArrays', { array: 'pendingList', index: pendingListIndex })
       this.$store.dispatch('setIsFriendButton', { user: index, value: 'notFriend' })
     }
   },
@@ -179,6 +182,7 @@ export default {
   padding: 5px;
   text-align: center;
   text-decoration: none;
+  cursor: pointer;
 }
 
 .friendPhoto img {
@@ -189,6 +193,7 @@ export default {
   box-shadow: 0 0 0 1px rgba(0,0,0,.15), 0 2px 3px rgba(0,0,0,.2);
   flex-grow: 2;
   cursor: pointer;
+  object-fit: cover;
 }
 
 .friendName {
