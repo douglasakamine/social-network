@@ -14,7 +14,10 @@ export default new Vuex.Store({
     ads: [],
     editProfileInfoButton: false,
     buttonAlbum: false,
-    clickedPhoto: 0
+    clickedPhoto: 0,
+    currentChat: [],
+    currentChatId: '',
+    messagingFriendList: []
   }, // State End
   getters: {
     getFeed (state) { // Get initial Feed
@@ -26,6 +29,13 @@ export default new Vuex.Store({
     },
     getButtonAlbum (state) { // Return Edit Profile Button (Toggle True or false)
       return state.buttonAlbum
+    },
+    getChat (state) { // Return the current chat
+      var newChat = state.currentChat.sort((a, b) => new Date(b.time) - new Date(a.time))
+      return newChat
+    },
+    getCurrentChatId (state) {
+      return state.currentChatId
     },
     getFriends (state) {
       return state.friends
@@ -39,11 +49,11 @@ export default new Vuex.Store({
     getFriendProfile (state) {
       return state.friendProfile
     },
-    getPendingList (state) {
-      return state.profile.pendingList
-    },
     getClickedPhoto (state) {
       return state.clickedPhoto
+    },
+    getMessagingFriendList (state) {
+      return state.messagingFriendList
     }
   }, // Getters End
   mutations: {
@@ -66,12 +76,6 @@ export default new Vuex.Store({
       state.profile[updateData.data] = updateData.value
     },
     setUsersList (state, friend) {
-      if (state.profile.friends.includes(friend.id)) {
-        friend.isFriend = 'friend'
-      } else if (state.profile.pendingList.includes(friend.id) ||
-      friend.pendingList.includes(state.profile.username)) {
-        friend.isFriend = 'pending'
-      }
       state.friends.push(friend)
     },
     setFriendProfile (state, userData) {
@@ -82,20 +86,6 @@ export default new Vuex.Store({
     },
     setIsFriendButtonOnProfile (state, value) {
       state.friendProfile.isFriend = value
-    },
-    removeFromUserArrays (state, data) { // Remove data from arrays inside Profile user
-      var userIndex = state.profile[data.array].findIndex(x => x.id === data.user)
-      state.profile[data.array].splice(userIndex, 1)
-    },
-    addIntoUserArrays (state, data) { // add data into arrays inside Profile user
-      state.profile[data.array].push(data.user)
-    },
-    removeFromFriendsArrays (state, data) { // Remove data from arrays inside Friend user
-      var userIndex = state.friends[data.friendIndex][data.array].findIndex(x => x.id === state.profile.username)
-      state.friends[data.friendIndex][data.array].splice(userIndex, 1)
-    },
-    addIntoFriendsArrays (state, data) { // add data into arrays inside Friend user
-      state.friends[data.friendIndex][data.array].push(data.user)
     },
     setEditProfileInfoButton (state, bool) {
       state.editProfileInfoButton = bool
@@ -111,7 +101,7 @@ export default new Vuex.Store({
     },
     removeLikes (state, index) {
       var userIndex = state.posts[index].likes.findIndex(x => x.id === state.profile.username)
-      state.posts[index].likes.splice(userIndex)
+      state.posts[index].likes.splice(userIndex, 1)
     },
     toggleLikeBox (state, payload) {
       state.posts[payload.index].likeBox = payload.bool
@@ -121,6 +111,19 @@ export default new Vuex.Store({
     },
     addPhotoToAlbum (state, file) {
       state.profile.album.push(file)
+    },
+    setChat (state, chat) {
+      state.currentChat = chat
+    },
+    setCurrentChatId (state, id) {
+      state.currentChatId = id
+    },
+    setFriendListOnMessaging (state, data) {
+      state.messagingFriendList = data
+    },
+    addIntoArray (state, payload) {
+      state.friends[payload.array] = payload.data
+      console.log(state.friends)
     }
   }, // Mutations End
   actions: {
@@ -154,18 +157,6 @@ export default new Vuex.Store({
     setIsFriendButton: ({ commit }, payload) => {
       commit('setIsFriendButton', payload)
     },
-    removeFromUserArrays: ({ commit }, data) => {
-      commit('removeFromUserArrays', data)
-    },
-    addIntoUserArrays: ({ commit }, data) => {
-      commit('addIntoUserArrays', data)
-    },
-    removeFromFriendsArrays: ({ commit }, data) => {
-      commit('removeFromFriendsArrays', data)
-    },
-    addIntoFriendsArrays: ({ commit }, data) => {
-      commit('addIntoFriendsArrays', data)
-    },
     setEditProfileInfoButton: ({ commit }, bool) => {
       commit('setEditProfileInfoButton', bool)
     },
@@ -195,6 +186,18 @@ export default new Vuex.Store({
     },
     setIsFriendButtonOnProfile: ({ commit }, value) => {
       commit('setIsFriendButtonOnProfile', value)
+    },
+    setChat: ({ commit }, chat) => {
+      commit('setChat', chat)
+    },
+    setCurrentChatId: ({ commit }, id) => {
+      commit('setCurrentChatId', id)
+    },
+    setFriendListOnMessaging: ({ commit }, data) => {
+      commit('setFriendListOnMessaging', data)
+    },
+    addIntoArray: ({ commit }, payload) => {
+      commit('addIntoArray', payload)
     }
   } // Actions End
 }) // Vuex End

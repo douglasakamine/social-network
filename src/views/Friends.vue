@@ -15,7 +15,7 @@
       <img :src="friend.photo" alt="friend photo"></router-link></span>
       <span v-else class="friendPhoto"><img src="../assets/images/default-user.jpg" alt="friend photo"></span>
       <span class="friendName"><router-link :to="'/profile/' + friend.username">{{ friend.name }}</router-link></span>
-      <button @click.prevent="addFriendButton(friend.username, index)" class="btn">{{ buttonAddFriendDescription(friend.isFriend) }}</button>
+      <button @click.prevent="addFriendButton(friend, index)" class="btn">{{ buttonAddFriendDescription(friend.isFriend) }}</button>
     </li>
     </ul>
 </div>
@@ -26,17 +26,20 @@
 import Header from '@/components/Header'
 import { mapGetters, mapActions } from 'vuex'
 import Utils from '@/mixins/UtilsMixin'
-import { db, dbUsers, auth } from '../main'
-import firebase from 'firebase'
+import { dbUsers, auth } from '../main'
 
 export default {
+  data () {
+    return {
+      pendingList: []
+    }
+  },
   components: {
     Header
   },
   computed: {
     ...mapGetters({
-      friends: 'getFriends',
-      pendingList: 'getPendingList'
+      friends: 'getFriends'
     })
   },
   methods: {
@@ -44,25 +47,20 @@ export default {
       'addFriend'
     ]),
     addFriendButton (friend, index) {
-      if (this.$store.state.profile.friends.includes(friend)) {
-        dbUsers.doc(this.$store.state.profile.username)
-          .update({
-            friends: firebase.firestore.FieldValue.arrayRemove(friend)
+      if (friend.isFriend === 'friend') {
+        dbUsers.doc(this.$store.state.profile.username).collection('friends')
+          .doc(friend.username).delete()
+        dbUsers.doc(friend.username).collection('friends')
+          .doc(this.$store.state.profile.username).delete()
+        this.friends[index].isFriend = 'notFriend'
+      } else if (friend.isFriend === 'notFriend') {
+        dbUsers.doc(friend.username).collection('friends')
+          .doc(this.$store.state.profile.username).set({
+            status: 'pending'
           })
-        this.$store.dispatch('removeFromUserArrays', { array: 'friends', user: friend })
-        dbUsers.doc(friend)
-          .update({
-            friends: firebase.firestore.FieldValue.arrayRemove(this.$store.state.profile.username)
-          })
-        this.$store.dispatch('removeFromFriendsArrays', { friendIndex: index, array: 'friends', user: this.$store.state.profile.username })
-        this.$store.dispatch('setIsFriendButton', { user: index, value: 'notFriend' })
+        this.friends[index].isFriend = 'pending'
       } else {
-        dbUsers.doc(friend)
-          .update({
-            pendingList: firebase.firestore.FieldValue.arrayUnion(this.$store.state.profile.username)
-          })
-        this.$store.dispatch('addIntoFriendsArrays', { friendIndex: index, array: 'pendingList', user: this.$store.state.profile.username })
-        this.$store.dispatch('setIsFriendButton', { user: index, value: 'pending' })
+        // Do something
       }
     },
     buttonAddFriendDescription (isFriend) {
@@ -72,40 +70,36 @@ export default {
         case 'pending': return 'Pending'
       }
     },
-    acceptSolicitation (pendingUser, pendingListIndex) {
-      console.log(this.$store.state.friends)
-      var index = this.$store.state.friends.findIndex((x) => x.id === pendingUser)
-      console.log(index)
-      db.collection('users').doc(this.$store.state.profile.username)
-        .update({
-          pendingList: firebase.firestore.FieldValue.arrayRemove(pendingUser)
+    acceptSolicitation (pendingUser, index) {
+      dbUsers.doc(this.$store.state.profile.username).collection('friends')
+        .doc(pendingUser).update({
+          status: 'friend'
         })
-      this.$store.dispatch('removeFromUserArrays', { array: 'pendingList', index: pendingListIndex })
-      db.collection('users').doc(this.$store.state.profile.username)
-        .update({
-          friends: firebase.firestore.FieldValue.arrayUnion(pendingUser)
+      dbUsers.doc(pendingUser).collection('friends')
+        .doc(this.$store.state.profile.username).set({
+          status: 'friend'
+        }).then(() => {
+          var userIndex = this.friends.findIndex(x => x.username === pendingUser)
+          this.friends[userIndex].isFriend = 'friend'
+          this.pendingList.splice(index, 1)
+        }).catch(function (error) {
+          console.error('Error writing document: ', error)
         })
-      this.$store.dispatch('addIntoUserArrays', { array: 'friends', user: pendingUser })
-      db.collection('users').doc(pendingUser)
-        .update({
-          friends: firebase.firestore.FieldValue.arrayUnion(this.$store.state.profile.username)
-        })
-      this.$store.dispatch('addIntoFriendsArrays', { friendIndex: index, array: 'friends', user: this.$store.state.profile.username })
-      this.$store.dispatch('setIsFriendButton', { user: index, value: 'friend' })
     },
-    rejectSolicitation (pendingUser, pendingListIndex) {
-      var index = this.$store.state.friends.findIndex(x => x.id === pendingUser)
-      db.collection('users').doc(this.$store.state.profile.username)
-        .update({
-          pendingList: firebase.firestore.FieldValue.arrayRemove(pendingUser)
+    rejectSolicitation (pendingUser, index) {
+      dbUsers.doc(this.$store.state.profile.username).collection('friends')
+        .doc(pendingUser).delete().then(() => {
+          var userIndex = this.friends.findIndex(x => x.username === pendingUser)
+          this.friends[userIndex].isFriend = 'notFriend'
+          this.pendingList.splice(index, 1)
+        }).catch(function (error) {
+          console.error('Error writing document: ', error)
         })
-      this.$store.dispatch('removeFromUserArrays', { array: 'pendingList', index: pendingListIndex })
-      this.$store.dispatch('setIsFriendButton', { user: index, value: 'notFriend' })
     }
   },
-  async beforeMount () { // Getting users friends from DB and setting in State vuex
+  async mounted () { // Getting users friends from DB and setting in State vuex
     await dbUsers.get().then(querySnapshot => {
-      querySnapshot.forEach(users => {
+      querySnapshot.forEach(async users => {
         if (users.data().username === this.$store.state.profile.username) {
           return // Skip your own profile
         }
@@ -114,10 +108,32 @@ export default {
           name: users.data().name,
           photo: users.data().photo,
           username: users.data().username,
-          isFriend: 'notFriend',
-          pendingList: users.data().pendingList,
-          friends: users.data().friends
+          isFriend: ''
         }
+        await dbUsers.doc(this.$store.state.profile.username).collection('friends')
+          .doc(user.username).get().then(async doc => {
+            if (doc.data() === undefined) {
+              var status = ''
+              await dbUsers.doc(user.username).collection('friends')
+                .doc(this.$store.state.profile.username).get().then(doc => {
+                  if (doc.data() === undefined) {
+                    status = 'notFriend'
+                  } else {
+                    status = doc.data().status
+                  }
+                })
+              if (status === 'pending') {
+                user.isFriend = 'pending'
+              } else {
+                user.isFriend = 'notFriend'
+              }
+            } else if (doc.data().status === 'pending') {
+              user.isFriend = 'pending'
+              this.pendingList.push(user.username)
+            } else if (doc.data().status === 'friend') {
+              user.isFriend = 'friend'
+            }
+          })
         this.$store.dispatch('setUsersList', user)
       })
     })
@@ -135,6 +151,7 @@ export default {
   },
   mixins: [Utils]
 }
+
 </script>
 
 <style scoped>

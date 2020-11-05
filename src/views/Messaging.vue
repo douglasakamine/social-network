@@ -10,6 +10,7 @@
 import Header from '@/components/Header'
 import FriendsList from '@/components/FriendsList'
 import ChatBox from '@/components/ChatBox'
+import Utils from '@/mixins/UtilsMixin'
 // @ is an alias to /src
 
 export default {
@@ -17,7 +18,11 @@ export default {
     FriendsList,
     ChatBox,
     Header
-  }
+  },
+  destroyed () {
+    this.resetState()
+  },
+  mixins: [Utils]
 
 }
 </script>

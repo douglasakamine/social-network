@@ -17,6 +17,7 @@ export const st = firebase.storage().ref()
 export const auth = firebase.auth()
 export const dbUsers = firebase.firestore().collection('users')
 export const dbPosts = firebase.firestore().collection('posts')
+export const dbChats = firebase.firestore().collection('chats')
 
 Vue.config.productionTip = false
 

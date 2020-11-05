@@ -21,31 +21,49 @@ export default {
         })
     },
     async getUserFriendData (user) {
-      await dbUsers.doc(user).get().then(doc => {
-        var user = doc.data()
-        if (this.$store.state.profile.friends.includes(doc.data().username)) {
-          user.isFriend = 'friend'
-        } else if (this.$store.state.profile.pendingList.includes(doc.data().username) ||
-        doc.data().pendingList.includes(this.$store.state.profile.username)) {
-          user.isFriend = 'pending'
-        } else {
-          user.isFriend = 'notFriend'
-        }
+      await dbUsers.doc(user).get().then(async friend => {
+        var user = friend.data()
+        await dbUsers.doc(this.$store.state.profile.username).collection('friends')
+          .doc(user.username).get().then(async doc => {
+            if (doc.data() === undefined) {
+              var status = ''
+              await dbUsers.doc(user.username).collection('friends')
+                .doc(this.$store.state.profile.username).get().then(doc => {
+                  if (doc.data() === undefined) {
+                    status = 'notFriend'
+                  } else {
+                    status = doc.data().status
+                  }
+                })
+              if (status === 'pending') {
+                user.isFriend = 'pending'
+              } else {
+                user.isFriend = 'notFriend'
+              }
+            } else if (doc.data().status === 'pending') {
+              user.isFriend = 'pending'
+            } else if (doc.data().status === 'friend') {
+              user.isFriend = 'friend'
+            }
+          })
         this.$store.dispatch('setFriendProfile', user)
       })
     },
     getFriendsPosts () {
-      var friends = this.$store.getters.getProfileInfo.friends
-      friends.forEach(friend => {
-        dbPosts.where('username', '==', friend)
-          .get().then(querySnapshot => {
-            querySnapshot.forEach(doc => {
-              var post = doc.data()
-              post.id = doc.id
-              this.$store.dispatch('setFeed', post)
-            })
+      dbUsers.doc(this.$store.state.profile.username).collection('friends')
+        .where('status', '==', 'friend')
+        .get().then(querySnapshot => {
+          querySnapshot.forEach(friend => {
+            dbPosts.where('username', '==', friend.id)
+              .get().then(querySnapshot => {
+                querySnapshot.forEach(doc => {
+                  var post = doc.data()
+                  post.id = doc.id
+                  this.$store.dispatch('setFeed', post)
+                })
+              })
           })
-      })
+        })
     },
     getMyPosts () {
       dbPosts.where('username', '==', this.$store.getters.getProfileInfo.username)
@@ -67,7 +85,10 @@ export default {
         ads: [],
         editProfileInfoButton: false,
         buttonAlbum: false,
-        clickedPhoto: 0
+        clickedPhoto: 0,
+        currentChat: [],
+        currentChatId: '',
+        messagingFriendList: []
       })
     }
   }

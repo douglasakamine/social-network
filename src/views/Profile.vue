@@ -67,7 +67,6 @@ import Album from '@/components/Album'
 import FriendAlbum from '@/components/FriendAlbum'
 import MyProfilePostForm from '@/components/MyProfilePostForm'
 import { mapGetters } from 'vuex'
-import firebase from 'firebase'
 
 export default {
   data () {
@@ -99,24 +98,20 @@ export default {
       this.$store.dispatch('setEditProfileInfoButton', true)
     },
     addFriendButton () {
-      var friend = this.friendProfile.username
-      if (this.$store.state.profile.friends.includes(friend)) {
-        dbUsers.doc(this.$store.state.profile.username)
-          .update({
-            friends: firebase.firestore.FieldValue.arrayRemove(friend)
+      if (this.friendProfile.isFriend === 'friend') {
+        dbUsers.doc(this.$store.state.profile.username).collection('friends')
+          .doc(this.friendProfile.username).delete()
+        dbUsers.doc(this.friendProfile.username).collection('friends')
+          .doc(this.$store.state.profile.username).delete()
+        this.friendProfile.isFriend = 'notFriend'
+      } else if (this.friendProfile.isFriend === 'notFriend') {
+        dbUsers.doc(this.friendProfile.username).collection('friends')
+          .doc(this.$store.state.profile.username).set({
+            status: 'pending'
           })
-        this.$store.dispatch('removeFromUserArrays', { array: 'friends', user: friend })
-        dbUsers.doc(friend)
-          .update({
-            friends: firebase.firestore.FieldValue.arrayRemove(this.$store.state.profile.username)
-          })
-        this.$store.dispatch('setIsFriendButtonOnProfile', 'notFriend')
+        this.friendProfile.isFriend = 'pending'
       } else {
-        dbUsers.doc(friend)
-          .update({
-            pendingList: firebase.firestore.FieldValue.arrayUnion(this.$store.state.profile.username)
-          })
-        this.$store.dispatch('setIsFriendButtonOnProfile', 'pending')
+        // Do something
       }
     },
     buttonAddFriendDescription (isFriend) {
