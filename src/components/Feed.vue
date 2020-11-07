@@ -1,5 +1,5 @@
 <template>
-<div id="feed">
+<div class="feed">
             <div class="post" v-for="(post, index) in posts" :key="post.id">
               <i @click="deletePost(post.id, index)" title="Delete post" v-show="post.username === user" class="fas fa-times"></i>
               <div class="post-header">
@@ -8,7 +8,7 @@
                 <div class="post-date">{{ post.date | moment("from", "now") }}</div>
                 </div>
                 <div class="post-content"><span v-html="post.content"></span></div>
-                <img id="postImage" :src="post.file">
+                <img class="postImage" :src="post.file">
                 <hr>
                 <div class="like-box">
                   <a class="like-button" @click="like(post.id, index, post.likes)"><i class="far fa-thumbs-up fa-2x">
@@ -82,7 +82,7 @@ export default {
 </script>
 
 <style scoped>
-#feed {
+.feed {
     text-align: center;
     width: 600px;
     margin-top: 10px;
@@ -105,8 +105,8 @@ export default {
   margin: 10px 20px 10px 20px;
 }
 
-#postImage {
-  width: 600px;
+.postImage {
+  width: 100%;
 }
 
 .post-content {

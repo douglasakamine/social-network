@@ -3,6 +3,9 @@
     <form @submit.prevent="sendPost" name="post-text">
       <textarea form="post-text" id="post-text" cols="72" rows="5"
       placeholder=" Write something..."></textarea>
+       <img v-if="uploadingImage === false" class="uploading"
+       src="../assets/images/uploading.gif" alt="uploading" v-cloak>
+      <img class="completed" v-if="uploadingImage == true" :src="image" alt="pre-post-image" v-cloak>
         <div id="post-buttons">
           <button type="button" class="button-file-post" @click="$refs.inputFilePost.click()">
             <i class="far fa-image"></i></button>
@@ -18,6 +21,12 @@
 import Utils from '../mixins/UtilsMixin'
 
 export default {
+  data () {
+    return {
+      image: null,
+      uploadingImage: null
+    }
+  },
   mixins: [Utils],
   methods: {
     getDate () {
@@ -37,16 +46,23 @@ export default {
       }
       this.$store.dispatch('addPost', post)
       event.target.children[0].value = null
+      this.uploadingImage = null
     },
     async uploadImageFromForm () {
+      this.uploadingImage = false
       var fileURL = await this.uploadFile(event.target.files[0])
       this.$store.dispatch('uploadFilePost', fileURL)
+      this.uploadingImage = true
+      this.image = fileURL
     }
   }
 }
 </script>
 
 <style scoped>
+[v-cloak] {
+  display: none;
+}
 
 .post {
     text-align: center;
@@ -94,5 +110,11 @@ button {
     right: 50%;
     margin: auto;
     border: solid 1px grey;
+}
+.completed {
+   width: 100%;
+}
+.uploading {
+  width: 30px;
 }
 </style>

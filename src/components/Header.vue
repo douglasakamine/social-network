@@ -2,7 +2,7 @@
   <header id="header">
     <nav class="headerNav">
      <div id="logo"><h1>Social Network</h1></div>
-     <input id="search" type="search" placeholder="Search...">
+     <input id="search" type="search" v-model="searchCharacter" placeholder="Search...">
     <nav class="links">
       <ul>
         <li><router-link to="/"><i class="fas fa-home"></i>
@@ -18,16 +18,32 @@
       </ul>
     </nav>
   </nav>
+    <div v-if="searchCharacter" class="user-search-bar">
+        <ul v-if="usersSearchBar.length > 0"><li class="search-friend-li"
+        v-for="user in usersSearchBar" :key="user.username">
+        <router-link :to="'/profile/' + user.username">
+          <img :src="user.photo" alt="Friend Photo">
+         <p>{{ user.name }}</p>
+        </router-link>
+        </li>
+        </ul>
+        <ul v-else><li class="search-friend-li">
+         <p>No data found</p>
+        </li>
+        </ul>
+    </div>
 </header>
 </template>
 
 <script>
-import { auth } from '../main'
+import { auth, dbUsers } from '../main'
 
 export default {
   data () {
     return {
-      user: null
+      user: null,
+      searchCharacter: '',
+      usersSearchBar: []
     }
   },
   computed: {
@@ -43,9 +59,29 @@ export default {
         alert(error.message)
       })
     }
+  },
+  watch: {
+    searchCharacter: function (newValue) {
+      if (newValue !== '') {
+        var users = []
+        dbUsers
+          .where('username', '>=', newValue)
+          .where('username', '<', newValue + 'z')
+          .get().then(querySnapshot => {
+            querySnapshot.forEach(doc => {
+              if (doc.data().username === this.getMyUser) {
+                return
+              }
+              users.push(doc.data())
+            })
+          })
+        this.usersSearchBar = users
+      } else {
+        this.usersSearchBar = ''
+      }
+    }
   }
 }
-
 </script>
 
 <style scoped>
@@ -121,6 +157,38 @@ export default {
   color: white;
   text-decoration: none;
   cursor: pointer;
+}
+.user-search-bar {
+  width: 417px;
+  background-color: white;
+  position: absolute;
+  top: 42px;
+  left: 353px;
+  box-shadow:  0 0 0 1px rgba(0,0,0,.15), 0 2px 3px rgba(0,0,0,.2);
+}
+.search-friend-li {
+  list-style: none;
+}
+.search-friend-li a {
+  display: flex;
+  height: 30px;
+  margin: 0;
+  align-items: center;
+  cursor: pointer;
+  text-decoration: none;
+  list-style: none;
+}
+.search-friend-li a img {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+.search-friend-li a p {
+  flex-grow: 1;
+  padding: 2px 2px 2px 40px;
+  font-weight: bold;
+  text-align: start;
 }
 
 </style>

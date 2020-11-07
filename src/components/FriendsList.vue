@@ -10,10 +10,14 @@
        </div>
        </div>
       <div v-if="searchCharacter" class="user-search-bar">
-        <ul><li class="search-friend-li"
+        <ul v-if="usersSearchBar.length > 0"><li class="search-friend-li"
         v-for="user in usersSearchBar" :key="user.username" @click="initNewChat(user)">
           <img :src="user.photo" alt="Friend Photo">
          <p>{{ user.name }}</p>
+        </li>
+        </ul>
+        <ul v-else><li class="search-friend-li">
+         <p>No data found</p>
         </li>
         </ul>
         </div>

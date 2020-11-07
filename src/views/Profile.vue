@@ -22,13 +22,13 @@
          <button v-else @click="addFriendButton" id="edit-profile-button"><i class="fas fa-user-plus">
            {{ buttonAddFriendDescription(friendProfile.isFriend) }}</i></button>
            </div>
-    <MyProfilePostForm v-if="userProfile" />
-    <MyFeed />
+    <PostForm v-if="userProfile" />
+    <Feed />
         <div v-if="userProfile" class="about-box">
             <div class="about-information"><i class="fas fa-briefcase" style="color: grey; font-size: 20px"></i>
             <strong>  Work at </strong>{{ profile.work }}</div>
             <div class="about-information"><i class="fas fa-birthday-cake" style="color: grey; font-size: 20px"></i>
-            <strong>  Birth </strong>{{ profile.birth }}</div>
+            <strong>  Birth </strong>{{ profile.birth | moment("MMMM Do YYYY") }}</div>
             <div v-if="profile.friends" class="about-information"><i class="fas fa-user-friends" style="color: grey; font-size: 20px"></i>
               <strong>  {{ profile.friends.length }}</strong> Friends</div>
             <div class="about-information">
@@ -41,7 +41,7 @@
             <div class="about-information"><i class="fas fa-briefcase" style="color: grey; font-size: 20px"></i>
             <strong>  Work at </strong>{{ friendProfile.work }}</div>
             <div class="about-information"><i class="fas fa-birthday-cake" style="color: grey; font-size: 20px"></i>
-            <strong>  Birth </strong>{{ friendProfile.birth }}</div>
+            <strong>  Birth </strong>{{ friendProfile.birth | moment("MMMM Do YYYY") }}</div>
             <div v-if="friendProfile.friends" class="about-information"><i class="fas fa-user-friends" style="color: grey; font-size: 20px"></i>
             <strong>  {{ friendProfile.friends.length }}</strong> Friends</div>
             <div class="about-information"><i class="fas fa-map-marker-alt" style="color: grey; font-size: 20px"></i>
@@ -62,10 +62,10 @@ import Header from '@/components/Header'
 import { auth, dbUsers, dbPosts } from '../main'
 import Utils from '../mixins/UtilsMixin'
 import EditProfileForm from '@/components/EditProfileForm'
-import MyFeed from '@/components/MyFeed'
+import Feed from '@/components/Feed'
 import Album from '@/components/Album'
 import FriendAlbum from '@/components/FriendAlbum'
-import MyProfilePostForm from '@/components/MyProfilePostForm'
+import PostForm from '@/components/PostForm'
 import { mapGetters } from 'vuex'
 
 export default {
@@ -77,10 +77,10 @@ export default {
   components: {
     Header,
     EditProfileForm,
-    MyFeed,
+    Feed,
     Album,
     FriendAlbum,
-    MyProfilePostForm
+    PostForm
   },
   computed: {
     ...mapGetters({
@@ -107,7 +107,13 @@ export default {
       } else if (this.friendProfile.isFriend === 'notFriend') {
         dbUsers.doc(this.friendProfile.username).collection('friends')
           .doc(this.$store.state.profile.username).set({
-            status: 'pending'
+            status: 'pending',
+            origin: false
+          })
+        dbUsers.doc(this.$store.state.profile.username).collection('friends')
+          .doc(this.friendProfile.username).set({
+            status: 'pending',
+            origin: true
           })
         this.friendProfile.isFriend = 'pending'
       } else {
@@ -149,6 +155,18 @@ export default {
       this.$store.state.posts = []
       this.userProfile = true
       this.getMyPosts()
+    } else {
+      this.getUserFriendData(to.params.id)
+      dbPosts.where('username', '==', to.params.id)
+        .get().then(querySnapshot => {
+          querySnapshot.forEach(doc => {
+            var post = doc.data()
+            post.id = doc.id
+            this.$store.dispatch('setFeed', post)
+          })
+        })
+      this.$store.state.posts = []
+      this.userProfile = false
     }
     next()
   },
@@ -176,6 +194,12 @@ v-cloak {
   width: 100%;
   position: relative;
   overflow: hidden;
+}
+.feed {
+    text-align: center;
+    width: 510px;
+    margin: 20px 5px 0 0;
+    float: right;
 }
 
 #edit-profile-button {
@@ -287,5 +311,10 @@ v-cloak {
 .about-information {
   margin: 5px;
 }
-
+.post {
+    width: 490px;
+    margin: 23px 5px 0 0;
+    padding: 10px;
+    float: right;
+}
 </style>

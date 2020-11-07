@@ -8,7 +8,7 @@
       </div>
         <div class="div-input">
           <label for="birth">Birth</label>
-          <input id="birth" type="text" :value="profile.birth">
+          <input id="birth" type="date" :value="profile.birth">
         </div>
         <div class="div-input">
           <label for="city">City</label>
@@ -56,8 +56,13 @@ export default {
         if (item.id === 'cancelButton' || item.id === 'saveButton') {
           continue
         }
-        this.$store.dispatch('updateProfileInfo', { data: item.id, value: item.value })
-        this.updateProfile({ data: item.id, value: item.value })
+        var newValue = item.value
+        if (item.id === 'birth') {
+          var myDate = new Date(newValue)
+          var newDate = myDate.getTime()
+          newValue = newDate
+        }
+        this.updateProfile({ data: item.id, value: newValue })
       }
       this.closeEditProfileInfoButton()
     },

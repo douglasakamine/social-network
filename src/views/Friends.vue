@@ -12,7 +12,10 @@
     <ul class="friends">
     <li class="friend" v-for="(friend, index) in friends" :key="friend.id">
       <span v-if="friend.photo" class="friendPhoto"><router-link :to="'/profile/' + friend.username">
-      <img :src="friend.photo" alt="friend photo"></router-link></span>
+      <div class="photo-box">
+        <img :src="friend.photo" alt="friend photo">
+      </div>
+      </router-link></span>
       <span v-else class="friendPhoto"><img src="../assets/images/default-user.jpg" alt="friend photo"></span>
       <span class="friendName"><router-link :to="'/profile/' + friend.username">{{ friend.name }}</router-link></span>
       <button @click.prevent="addFriendButton(friend, index)" class="btn">{{ buttonAddFriendDescription(friend.isFriend) }}</button>
@@ -54,9 +57,15 @@ export default {
           .doc(this.$store.state.profile.username).delete()
         this.friends[index].isFriend = 'notFriend'
       } else if (friend.isFriend === 'notFriend') {
+        dbUsers.doc(this.$store.state.profile.username).collection('friends')
+          .doc(friend.username).set({
+            status: 'pending',
+            origin: true
+          })
         dbUsers.doc(friend.username).collection('friends')
           .doc(this.$store.state.profile.username).set({
-            status: 'pending'
+            status: 'pending',
+            origin: false
           })
         this.friends[index].isFriend = 'pending'
       } else {
@@ -76,7 +85,7 @@ export default {
           status: 'friend'
         })
       dbUsers.doc(pendingUser).collection('friends')
-        .doc(this.$store.state.profile.username).set({
+        .doc(this.$store.state.profile.username).update({
           status: 'friend'
         }).then(() => {
           var userIndex = this.friends.findIndex(x => x.username === pendingUser)
@@ -88,13 +97,12 @@ export default {
     },
     rejectSolicitation (pendingUser, index) {
       dbUsers.doc(this.$store.state.profile.username).collection('friends')
-        .doc(pendingUser).delete().then(() => {
-          var userIndex = this.friends.findIndex(x => x.username === pendingUser)
-          this.friends[userIndex].isFriend = 'notFriend'
-          this.pendingList.splice(index, 1)
-        }).catch(function (error) {
-          console.error('Error writing document: ', error)
-        })
+        .doc(pendingUser).delete()
+      dbUsers.doc(pendingUser).collection('friends')
+        .doc(this.$store.state.profile.username).delete()
+      var userIndex = this.friends.findIndex(x => x.username === pendingUser)
+      this.friends[userIndex].isFriend = 'notFriend'
+      this.pendingList.splice(index, 1)
     }
   },
   async mounted () { // Getting users friends from DB and setting in State vuex
@@ -113,23 +121,12 @@ export default {
         await dbUsers.doc(this.$store.state.profile.username).collection('friends')
           .doc(user.username).get().then(async doc => {
             if (doc.data() === undefined) {
-              var status = ''
-              await dbUsers.doc(user.username).collection('friends')
-                .doc(this.$store.state.profile.username).get().then(doc => {
-                  if (doc.data() === undefined) {
-                    status = 'notFriend'
-                  } else {
-                    status = doc.data().status
-                  }
-                })
-              if (status === 'pending') {
-                user.isFriend = 'pending'
-              } else {
-                user.isFriend = 'notFriend'
-              }
+              user.isFriend = 'notFriend'
             } else if (doc.data().status === 'pending') {
+              if (doc.data().origin === false) {
+                this.pendingList.push(user.username)
+              }
               user.isFriend = 'pending'
-              this.pendingList.push(user.username)
             } else if (doc.data().status === 'friend') {
               user.isFriend = 'friend'
             }
@@ -202,14 +199,19 @@ export default {
   cursor: pointer;
 }
 
-.friendPhoto img {
+.photo-box {
   width: 70px;
-  height: 80px;
+  height: 70px;
   border-radius: 50%;
+  overflow: hidden;
   border: none;
   box-shadow: 0 0 0 1px rgba(0,0,0,.15), 0 2px 3px rgba(0,0,0,.2);
   flex-grow: 2;
   cursor: pointer;
+}
+.photo-box img {
+  width: 100%;
+  height: 100%;
   object-fit: cover;
 }
 

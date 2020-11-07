@@ -26,20 +26,7 @@ export default {
         await dbUsers.doc(this.$store.state.profile.username).collection('friends')
           .doc(user.username).get().then(async doc => {
             if (doc.data() === undefined) {
-              var status = ''
-              await dbUsers.doc(user.username).collection('friends')
-                .doc(this.$store.state.profile.username).get().then(doc => {
-                  if (doc.data() === undefined) {
-                    status = 'notFriend'
-                  } else {
-                    status = doc.data().status
-                  }
-                })
-              if (status === 'pending') {
-                user.isFriend = 'pending'
-              } else {
-                user.isFriend = 'notFriend'
-              }
+              user.isFriend = 'notFriend'
             } else if (doc.data().status === 'pending') {
               user.isFriend = 'pending'
             } else if (doc.data().status === 'friend') {
