@@ -20,10 +20,10 @@ export default {
           console.error('Error writing document: ', error)
         })
     },
-    async getUserFriendData (user) {
+    async getUserFriendData (user, myProfileUser) {
       await dbUsers.doc(user).get().then(async friend => {
         var user = friend.data()
-        await dbUsers.doc(this.$store.state.profile.username).collection('friends')
+        await dbUsers.doc(myProfileUser).collection('friends')
           .doc(user.username).get().then(async doc => {
             if (doc.data() === undefined) {
               user.isFriend = 'notFriend'

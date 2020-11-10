@@ -1,7 +1,7 @@
 <template>
     <div class="chat-box">
         <div class="box-messaging" ref="boxMessaging">
-                <div v-for="message in chat.slice().reverse()" :key="message.id" :class="getMessageUserClass(message.from)">
+                <div v-for="message in chat" :key="message.id" :class="getMessageUserClass(message.from)">
                     <div class="name-in-message">{{ message.name }} <span>says...</span></div>
                     <div class="message-content" v-html="message.content"></div>
                     <div class="time">{{ message.time | moment("h:mm") }}</div>
@@ -20,6 +20,7 @@
 <script>
 import { mapGetters } from 'vuex'
 import { dbChats } from '../main'
+import firebase from 'firebase'
 
 export default {
   computed: {
@@ -46,8 +47,8 @@ export default {
       }
     },
     getDate () {
-      const date = new Date()
-      return date.getTime()
+      const date = firebase.firestore.Timestamp.now().seconds
+      return date
     },
     scrollToEnd () { // Put the message scroll bar at bottom
       var content = this.$refs.boxMessaging

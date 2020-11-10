@@ -72,7 +72,7 @@ export default {
   },
   methods: {
     getChat (id, index) {
-      dbChats.doc(id).collection('messages')
+      dbChats.doc(id).collection('messages').orderBy('time')
         .onSnapshot(snap => {
           var chat = []
           snap.forEach(doc => {

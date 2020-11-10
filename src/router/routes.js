@@ -5,6 +5,7 @@ import Friends from '../views/Friends.vue'
 import Messaging from '../views/Messaging.vue'
 import Profile from '../views/Profile.vue'
 import Login from '../views/Login.vue'
+import Photos from '../views/Photos.vue'
 import NotFound from '../components/NotFound.vue'
 import firebase from 'firebase'
 
@@ -39,6 +40,12 @@ const routes = [
     path: '/profile/:id',
     name: 'Profile',
     component: Profile,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/photos/:id',
+    name: 'Photos',
+    component: Photos,
     meta: { requiresAuth: true }
   },
   {

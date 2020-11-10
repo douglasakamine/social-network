@@ -48,7 +48,7 @@ export default {
   },
   computed: {
     getMyUser () {
-      return this.$store.state.profile.username
+      return auth.currentUser.displayName
     }
   },
   methods: {

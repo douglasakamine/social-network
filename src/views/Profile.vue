@@ -50,8 +50,24 @@
             <div class="about-information"><strong>Profile Description</strong></div>
             <span>{{ friendProfile.description }}</span>
       </div>
-      <Album v-if="userProfile" />
-      <FriendAlbum v-else />
+      <div class="album-body">
+          <router-link class="see-all-link" :to="'/photos/' + this.$route.params.id">See all</router-link>
+           <div class="album-title">Fotos</div>
+           <div v-if="userProfile">
+      <div v-if="profile.album" class="photo-album">
+      <div class="photo" v-for="photo in profile.album.slice(0, 4)" :key="photo.id">
+        <img :src="photo" alt="photo">
+      </div>
+     </div>
+     </div>
+     <div v-if="userProfile === false">
+     <div v-if="friendProfile.album" class="photo-album">
+      <div class="photo" v-for="photo in friendProfile.album.slice(0, 4)" :key="photo.id">
+        <img :src="photo" alt="photo">
+      </div>
+     </div>
+     </div>
+    </div>
     <EditProfileForm v-show="getEditProfileInfoButton"></EditProfileForm>
     </div>
 </div>
@@ -63,23 +79,20 @@ import { auth, dbUsers, dbPosts } from '../main'
 import Utils from '../mixins/UtilsMixin'
 import EditProfileForm from '@/components/EditProfileForm'
 import Feed from '@/components/Feed'
-import Album from '@/components/Album'
-import FriendAlbum from '@/components/FriendAlbum'
 import PostForm from '@/components/PostForm'
 import { mapGetters } from 'vuex'
 
 export default {
   data () {
     return {
-      userProfile: false
+      userProfile: null
     }
   },
+  mixins: [Utils],
   components: {
     Header,
     EditProfileForm,
     Feed,
-    Album,
-    FriendAlbum,
     PostForm
   },
   computed: {
@@ -128,17 +141,17 @@ export default {
       }
     }
   },
-  async beforeCreate () {
+  async created () {
     var user = auth.currentUser
     if (user) {
-      await dbUsers.doc(user.displayName).get().then(doc => {
-        this.$store.dispatch('setProfileInfo', doc.data())
-      })
-      if (this.$route.params.id === this.$store.getters.getProfileInfo.username) {
+      if (this.$route.params.id === user.displayName) {
+        await dbUsers.doc(user.displayName).get().then(doc => {
+          this.$store.dispatch('setProfileInfo', doc.data())
+        })
         this.userProfile = true
         this.getMyPosts()
       } else {
-        await this.getUserFriendData(this.$route.params.id)
+        this.getUserFriendData(this.$route.params.id, user.displayName)
         dbPosts.where('username', '==', this.$route.params.id)
           .get().then(querySnapshot => {
             querySnapshot.forEach(doc => {
@@ -147,33 +160,36 @@ export default {
               this.$store.dispatch('setFeed', post)
             })
           })
+        this.userProfile = false
       }
     }
   },
   beforeRouteUpdate (to, from, next) {
-    if (to.params.id === this.$store.getters.getProfileInfo.username) {
-      this.$store.state.posts = []
-      this.userProfile = true
-      this.getMyPosts()
-    } else {
-      this.getUserFriendData(to.params.id)
-      dbPosts.where('username', '==', to.params.id)
-        .get().then(querySnapshot => {
-          querySnapshot.forEach(doc => {
-            var post = doc.data()
-            post.id = doc.id
-            this.$store.dispatch('setFeed', post)
+    var user = auth.currentUser
+    if (user) {
+      if (to.params.id === user.displayName) {
+        this.$store.state.posts = []
+        this.userProfile = true
+        this.getMyPosts()
+      } else {
+        this.getUserFriendData(to.params.id, user.displayName)
+        dbPosts.where('username', '==', to.params.id)
+          .get().then(querySnapshot => {
+            querySnapshot.forEach(doc => {
+              var post = doc.data()
+              post.id = doc.id
+              this.$store.dispatch('setFeed', post)
+            })
           })
-        })
-      this.$store.state.posts = []
-      this.userProfile = false
+        this.$store.state.posts = []
+        this.userProfile = false
+      }
+      next()
     }
-    next()
   },
   destroyed () {
     this.resetState()
-  },
-  mixins: [Utils]
+  }
 }
 </script>
 
@@ -316,5 +332,153 @@ v-cloak {
     margin: 23px 5px 0 0;
     padding: 10px;
     float: right;
+}
+.album-body {
+  margin: 20px 0 0 5px;
+  border-radius: 1em;
+  background-color: whitesmoke;
+  padding: 5px;
+  box-shadow: 0 0 0 1px rgba(0,0,0,.15), 0 2px 3px rgba(0,0,0,.2);
+  width: 400px;
+}
+.photo-album {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  border-radius: 1em;
+}
+.album-title {
+  font-size: 20px;
+  font-weight: bold;
+  text-align: left;
+  margin: 5px 10px 10px 15px;
+}
+.photo {
+  margin: 5px;
+  width: 150px;
+  height: 200px;
+  cursor: pointer;
+}
+.photo img {
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+  border-radius: .4em;
+}
+
+/* Slideshow container */
+.slideshow-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 9998;
+  margin: auto;
+  background: #000;
+  background-color: rgba(0, 0, 0, 0.8);
+  display: table;
+}
+
+/* Next & previous buttons */
+.prev, .next {
+  cursor: pointer;
+  position: absolute;
+  top: 50%;
+  width: auto;
+  margin-top: -22px;
+  padding: 16px;
+  color: white;
+  font-weight: bold;
+  font-size: 18px;
+  transition: 0.6s ease;
+  border-radius: 0 3px 3px 0;
+  user-select: none;
+}
+
+/* Position the "next button" to the right */
+.next {
+  right: 0;
+  border-radius: 3px 0 0 3px;
+}
+
+/* Position the "next button" to the right */
+.prev {
+  left: 0;
+  border-radius: 3px 0 0 3px;
+}
+.fa-window-close {
+  cursor: pointer;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: auto;
+  padding: 16px;
+  color: white;
+  font-weight: bold;
+  font-size: 18px;
+  transition: 0.6s ease;
+  border-radius: 0 3px 3px 0;
+  user-select: none;
+}
+
+/* On hover, add a black background color with a little bit see-through */
+.prev:hover, .next:hover, .fa-window-close:hover {
+  background-color: rgba(0,0,0,0.8);
+}
+
+/* Caption text */
+.text {
+  color: #f2f2f2;
+  font-size: 15px;
+  padding: 8px 12px;
+  position: absolute;
+  bottom: 8px;
+  width: 100%;
+  text-align: center;
+}
+
+/* Number text (1/3 etc) */
+.numbertext {
+  color: #f2f2f2;
+  font-size: 12px;
+  padding: 8px 12px;
+  position: absolute;
+  top: 0;
+}
+
+/* Fading animation */
+.fade {
+  -webkit-animation-name: fade;
+  -webkit-animation-duration: 1.5s;
+  animation-name: fade;
+  animation-duration: 1.5s;
+  display: inline-block;
+  width: 600px;
+}
+.fade img {
+    width:100%;
+    object-fit: cover;
+    min-height: 100%
+}
+.close-button-box {
+    text-align: end;
+}
+
+@-webkit-keyframes fade {
+  from {opacity: .4}
+  to {opacity: 1}
+}
+.see-all-link {
+  float: right;
+  margin: 10px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: medium;
+}
+
+@keyframes fade {
+  from {opacity: .4}
+  to {opacity: 1}
 }
 </style>

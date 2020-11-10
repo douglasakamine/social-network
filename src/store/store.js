@@ -31,8 +31,7 @@ export default new Vuex.Store({
       return state.buttonAlbum
     },
     getChat (state) { // Return the current chat
-      var newChat = state.currentChat.sort((a, b) => new Date(b.time) - new Date(a.time))
-      return newChat
+      return state.currentChat
     },
     getCurrentChatId (state) {
       return state.currentChatId
@@ -123,7 +122,9 @@ export default new Vuex.Store({
     },
     addIntoArray (state, payload) {
       state.friends[payload.array] = payload.data
-      console.log(state.friends)
+    },
+    setDeleteButtonOnPhotos (state, payload) {
+      Vue.set(state.profile.deleteHover, payload.photoIndex, payload.value)
     }
   }, // Mutations End
   actions: {
@@ -198,6 +199,9 @@ export default new Vuex.Store({
     },
     addIntoArray: ({ commit }, payload) => {
       commit('addIntoArray', payload)
+    },
+    setDeleteButtonOnPhotos: ({ commit }, payload) => {
+      commit('setDeleteButtonOnPhotos', payload)
     }
   } // Actions End
 }) // Vuex End

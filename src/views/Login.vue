@@ -73,8 +73,6 @@ export default {
             email: this.form.email,
             photo: 'https://firebasestorage.googleapis.com/v0/b/social-network-ed46e.appspot.com/o/default-user.jpg?alt=media&token=8adfe6a7-64a5-4f74-aa1f-ab9f34aa6ad9',
             backgroundImg: 'https://firebasestorage.googleapis.com/v0/b/social-network-ed46e.appspot.com/o/default-background.jpg?alt=media&token=e91f1bcb-9436-4b36-a9de-a4ec1b243b70',
-            friends: [],
-            pendingList: [],
             album: [],
             birth: '',
             city: '',

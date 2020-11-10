@@ -70,12 +70,13 @@ export default {
       }
     },
     deletePost (id, index) {
-      dbPosts.doc(id).delete().then(() => {
-        console.log('Document successfully deleted!')
-        this.$store.dispatch('removePost', index)
-      }).catch(function (error) {
-        console.error('Error removing document: ', error)
-      })
+      if (confirm('Are you sure to delete this post?')) {
+        dbPosts.doc(id).delete().then(() => {
+          this.$store.dispatch('removePost', index)
+        }).catch(function (error) {
+          console.error('Error removing document: ', error)
+        })
+      }
     }
   }
 }

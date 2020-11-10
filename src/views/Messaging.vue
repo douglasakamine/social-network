@@ -23,7 +23,6 @@ export default {
     this.resetState()
   },
   mixins: [Utils]
-
 }
 </script>
 
