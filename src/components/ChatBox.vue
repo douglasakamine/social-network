@@ -4,13 +4,13 @@
                 <div v-for="message in chat" :key="message.id" :class="getMessageUserClass(message.from)">
                     <div class="name-in-message">{{ message.name }} <span>says...</span></div>
                     <div class="message-content" v-html="message.content"></div>
-                    <div class="time">{{ message.time | moment("h:mm") }}</div>
+                    <div v-if="message.time" class="time">{{ message.time.seconds | moment("hh:mm") }}</div>
                     </div>
                 </div>
             <div class="typing-box">
              <form @submit.prevent="sendMessage" name="send-message">
                 <textarea name="messaging" id="messaging-text" cols="70"
-                rows="10" placeholder="Write a message..."></textarea>
+                rows="5" placeholder="Write a message..."></textarea>
                <button id="send-message" type="submit">Send</button>
             </form>
     </div>
@@ -35,7 +35,7 @@ export default {
         content: event.target.children[0].value.replace(/\n\r?/g, '<br />'),
         from: this.$store.state.profile.username,
         name: this.$store.state.profile.name,
-        time: this.getDate()
+        time: firebase.firestore.FieldValue.serverTimestamp()
       })
       event.target.children[0].value = null
     },
@@ -47,8 +47,9 @@ export default {
       }
     },
     getDate () {
-      const date = firebase.firestore.Timestamp.now().seconds
-      return date
+      var serverTime = firebase.firestore.FieldValue.serverTimestamp()
+      console.log(serverTime)
+      return serverTime
     },
     scrollToEnd () { // Put the message scroll bar at bottom
       var content = this.$refs.boxMessaging
@@ -72,9 +73,13 @@ export default {
     padding: 20px 10px 0px 40px;
     overflow: scroll;
 }
+.message-content {
+   max-width: 300px;
+   word-wrap: break-word;
+}
 
 .typing-box {
-    height: 195px;
+    height: 130px;
     position: relative;
 }
 

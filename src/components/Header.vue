@@ -168,6 +168,7 @@ export default {
 }
 .search-friend-li {
   list-style: none;
+  height: 55px;
 }
 .search-friend-li a {
   display: flex;

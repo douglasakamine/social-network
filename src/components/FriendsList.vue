@@ -158,7 +158,7 @@ export default {
 }
 .search-friend-li {
   display: flex;
-  height: 50px;
+  height: 60px;
   margin: 0;
   align-items: center;
   cursor: pointer;

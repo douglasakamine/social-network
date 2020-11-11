@@ -205,7 +205,9 @@ export default {
   margin: auto;
   background: #000;
   background-color: rgba(0, 0, 0, 0.8);
-  display: table;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 /* Next & previous buttons */

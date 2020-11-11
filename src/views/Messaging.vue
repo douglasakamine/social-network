@@ -32,7 +32,7 @@ export default {
     display: flex;
     background-color: whitesmoke;
     width: 900px;
-    height: 620px;
+    height: 560px;
     align-items: stretch;
     border: solid 1px #cdcfd2;
 }

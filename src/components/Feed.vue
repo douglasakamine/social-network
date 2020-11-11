@@ -4,16 +4,17 @@
               <i @click="deletePost(post.id, index)" title="Delete post" v-show="post.username === user" class="fas fa-times"></i>
               <div class="post-header">
               <img id="photo" :src="post.photo">
-                <h3><router-link :to="'/profile/' + post.username">{{ post.name }}</router-link></h3>
+                <h3><router-link :to="'/profile/' + post.username" style="color: black; text-decoration: none;">
+                {{ post.name }}</router-link></h3>
                 <div class="post-date">{{ post.date | moment("from", "now") }}</div>
                 </div>
                 <div class="post-content"><span v-html="post.content"></span></div>
                 <img class="postImage" :src="post.file">
                 <hr>
                 <div class="like-box">
-                  <a class="like-button" @click="like(post.id, index, post.likes)"><i class="far fa-thumbs-up fa-2x">
-                  </i><strong>{{ likeDescription(post.likes) }}</strong></a>
-                 <a @click="toggleListLiked(post.likeBox, index)" class="likes"><strong>{{ post.likes.length }} Likes</strong></a>
+                  <a class="like-button" @click="like(post.id, index, post.likes)"><i class="far fa-thumbs-up fa-2x" style="color: steelblue;">
+                  </i><strong style="color: steelblue;">{{ likeDescription(post.likes) }}</strong></a>
+                 <a v-if="post.likes.length > 0" @click="toggleListLiked(post.likeBox, index)" class="likes"><strong>{{ post.likes.length }} Likes</strong></a>
                  <div class="likes-list" v-if="post.likeBox">
                    <p v-for="like in post.likes" :key="like.id">
                      <router-link :to="'/profile/' + like">{{ like }}
@@ -151,7 +152,7 @@ export default {
   padding: 5px;
   background-color: white;
   position: absolute;
-  top: 33px;
+  top: 30px;
   left: 65px;
   font-weight: bold;
   box-shadow: 0 0 0 1px rgba(0,0,0,.15), 0 2px 3px rgba(0,0,0,.2);
