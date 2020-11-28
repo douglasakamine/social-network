@@ -5,8 +5,9 @@
      <hr style="color:black">
     <div><h3><router-link :to="'/profile/' + profile.username"
     style="text-decoration: none; color: black;">{{ profile.name }}</router-link></h3></div>
-    <div><p><strong>Work at:</strong> {{ profile.work }}</p></div>
-    <div><p><strong>Birth:</strong> {{ profile.birth | moment("MMMM Do YYYY") }}</p></div>
+    <div v-if="profile.work" ><p><strong>Work at:</strong> {{ profile.work }}</p></div>
+    <div v-if="profile.birth"><p><strong>Birth:</strong> {{ profile.birth | moment("MMMM Do YYYY") }}</p></div>
+    <div v-if="profile.country"><p><strong>Living in:</strong> {{ profile.country }}</p></div>
     <div v-if="profile.friends"><p><strong>{{ profile.friends.length }}</strong> Friends</p></div>
   </aside>
 </template>

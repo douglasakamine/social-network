@@ -11,7 +11,7 @@
          <div class="icon-title">Profile</div></router-link></li>
         <li><router-link to="/friends"><i class="fas fa-users"></i>
          <div class="icon-title">Friends</div></router-link></li>
-        <li><router-link to="/messaging"><i class="fas fa-comment-alt"></i>
+        <li><div v-show="notification > 0" class="notification">{{ notification }}</div><router-link to="/messaging"><i class="fas fa-comment-alt"></i>
          <div class="icon-title">Messaging</div></router-link></li>
         <li><a @click="logout"><i class="fas fa-sign-out-alt"></i>
          <div class="icon-title">Logout</div></a></li>
@@ -36,6 +36,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import { auth, dbUsers } from '../main'
 
 export default {
@@ -47,6 +48,9 @@ export default {
     }
   },
   computed: {
+    ...mapGetters({
+      notification: 'getNotification'
+    }),
     getMyUser () {
       return auth.currentUser.displayName
     }
@@ -65,8 +69,8 @@ export default {
       if (newValue !== '') {
         var users = []
         dbUsers
-          .where('username', '>=', newValue)
-          .where('username', '<', newValue + 'z')
+          .where('username', '>=', newValue.toLowerCase())
+          .where('username', '<', newValue.toLowerCase() + 'z')
           .get().then(querySnapshot => {
             querySnapshot.forEach(doc => {
               if (doc.data().username === this.getMyUser) {
@@ -129,6 +133,7 @@ export default {
 
 .links {
     flex-grow: 1;
+    position: relative;
 }
 
 .links ul {
@@ -190,6 +195,17 @@ export default {
   padding: 2px 2px 2px 40px;
   font-weight: bold;
   text-align: start;
+}
+.notification {
+  position: absolute;
+  top: 10px;
+  right: 70px;
+  color: white;
+  background-color: red;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  z-index: 9001;
 }
 
 </style>

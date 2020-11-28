@@ -29,7 +29,7 @@
 import Header from '@/components/Header'
 import { mapGetters, mapActions } from 'vuex'
 import Utils from '@/mixins/UtilsMixin'
-import { dbUsers, auth } from '../main'
+import { dbUsers } from '../main'
 
 export default {
   data () {
@@ -134,14 +134,6 @@ export default {
         this.$store.dispatch('setUsersList', user)
       })
     })
-  },
-  async beforeCreate () { // Getting user profile from DB
-    var user = auth.currentUser
-    if (user) {
-      await dbUsers.doc(user.displayName).get().then(doc => {
-        this.$store.dispatch('setProfileInfo', doc.data())
-      })
-    }
   },
   destroyed () {
     this.$store.state.friends = []

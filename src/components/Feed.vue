@@ -8,7 +8,7 @@
                 {{ post.name }}</router-link></h3>
                 <div class="post-date">{{ post.date | moment("from", "now") }}</div>
                 </div>
-                <div class="post-content"><span v-html="post.content"></span></div>
+                <div class="post-content"><p v-for="line in post.content.split('<br />')" :key="line" v-linkified>{{ line }}<br></p></div>
                 <img class="postImage" :src="post.file">
                 <hr>
                 <div class="like-box">
@@ -115,6 +115,9 @@ export default {
   width: 550px;
   text-align: left;
   margin: 5px 25px 10px 25px;
+}
+.post-content p {
+  margin: unset;
 }
 
 #photo {

@@ -19,9 +19,6 @@ export default {
     ChatBox,
     Header
   },
-  destroyed () {
-    this.resetState()
-  },
   mixins: [Utils]
 }
 </script>

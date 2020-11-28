@@ -23,9 +23,14 @@
         </div>
       <ul class="friend-list">
         <li :class="{ 'friend-li': true, 'highlighted': friend.userClicked }" v-for="(friend, index) in usersFriends" :key="friend.chatId"
-         @click="getChat(friend.chatId, index)">
+         @click="getChat(index)">
          <img :src="friend.photo" alt="Friend Photo">
+         <div class="container-li">
          <p>{{ friend.name }}</p>
+         <div class="chat-summary">
+           <p v-if="friend.chat[friend.chat.length -1]" v-html="checkName(friend.chat[friend.chat.length -1].from) + truncate(friend.chat[friend.chat.length -1].content, 10)"></p>
+          </div>
+         </div>
         </li>
      </ul>
     </div>
@@ -33,7 +38,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import { dbUsers, dbChats, auth } from '../main'
+import { dbUsers, dbChats } from '../main'
 
 export default {
   data () {
@@ -45,7 +50,7 @@ export default {
   computed: {
     ...mapGetters({
       profile: 'getProfileInfo',
-      usersFriends: 'getMessagingFriendList'
+      usersFriends: 'getChat'
     })
   },
   watch: {
@@ -53,8 +58,8 @@ export default {
       if (newValue !== '') {
         var chatUsers = []
         dbUsers
-          .where('username', '>=', newValue)
-          .where('username', '<', newValue + 'z')
+          .where('username', '>=', newValue.toLowerCase())
+          .where('username', '<', newValue.toLowerCase() + 'z')
           .get().then(querySnapshot => {
             querySnapshot.forEach(doc => {
               var index = this.usersFriends.findIndex(x => x.username === doc.data().username)
@@ -71,16 +76,15 @@ export default {
     }
   },
   methods: {
-    getChat (id, index) {
-      dbChats.doc(id).collection('messages').orderBy('time')
-        .onSnapshot(snap => {
-          var chat = []
-          snap.forEach(doc => {
-            chat.push(doc.data())
-          })
-          this.$store.dispatch('setChat', chat)
-        })
-      this.$store.dispatch('setCurrentChatId', id)
+    truncate (text, num) {
+      if (text.length > num) {
+        return text.substring(0, num) + ' ...'
+      } else {
+        return text
+      }
+    },
+    getChat (index) {
+      this.$store.dispatch('setCurrentChat', index)
 
       this.usersFriends.forEach(user => {
         user.userClicked = false
@@ -111,25 +115,13 @@ export default {
         .catch(function (error) {
           console.error('Error adding document: ', error)
         })
-    }
-  },
-  async beforeCreate () {
-    var user = auth.currentUser
-    if (user) {
-      await dbUsers.doc(user.displayName).get().then(doc => {
-        this.$store.dispatch('setProfileInfo', doc.data())
-      })
-      dbUsers.doc(user.displayName).collection('messagingContacts')
-        .onSnapshot(snap => {
-          var friends = []
-          snap.forEach(doc => {
-            var user = doc.data()
-            user.userClicked = false
-            friends.push(user)
-          })
-          this.$store.dispatch('setFriendListOnMessaging', friends)
-          this.getChat(this.usersFriends[0].chatId, 0)
-        })
+    },
+    checkName (user) {
+      if (user === this.profile.username) {
+        return 'You: '
+      } else {
+        return user + ': '
+      }
     }
   }
 }
@@ -156,12 +148,16 @@ export default {
     cursor: pointer;
     align-items: center;
 }
+.container-li {
+    display: flex;
+    flex-direction: column;
+}
 .search-friend-li {
-  display: flex;
   height: 60px;
   margin: 0;
   align-items: center;
   cursor: pointer;
+  display: flex;
 }
 .search-friend-li img {
   width: 55px;
@@ -186,6 +182,7 @@ export default {
   flex-grow: 1;
   padding: 2px 2px 2px 40px;
   font-weight: bold;
+  margin: unset;
 }
 #search-friend {
   width: 100%;
@@ -216,6 +213,12 @@ export default {
 .highlighted {
   background-color: #CDD3CE;
   border-radius: .2em;
+}
+.chat-summary {
+  display: block;
+}
+.chat-summary p {
+  font-weight: normal;
 }
 
 </style>

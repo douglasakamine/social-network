@@ -6,6 +6,12 @@ import firebase from 'firebase/app'
 import 'firebase/database'
 import 'firebase/storage'
 import { firebaseConfig } from '@/mixins/FirebaseSettings'
+import linkify from 'vue-linkify'
+import Nl2br from 'vue-nl2br'
+
+Vue.component('nl2br', Nl2br)
+
+Vue.directive('linkified', linkify)
 
 Vue.use(require('vue-moment'))
 

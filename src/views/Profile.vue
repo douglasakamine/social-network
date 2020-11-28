@@ -25,26 +25,26 @@
     <PostForm v-if="userProfile" />
     <Feed />
         <div v-if="userProfile" class="about-box">
-            <div class="about-information"><i class="fas fa-briefcase" style="color: grey; font-size: 20px"></i>
+            <div v-show="profile.work" class="about-information"><i class="fas fa-briefcase" style="color: grey; font-size: 20px"></i>
             <strong>  Work at </strong>{{ profile.work }}</div>
-            <div class="about-information"><i class="fas fa-birthday-cake" style="color: grey; font-size: 20px"></i>
+            <div v-if="profile.birth" class="about-information"><i class="fas fa-birthday-cake" style="color: grey; font-size: 20px"></i>
             <strong>  Birth </strong>{{ profile.birth | moment("MMMM Do YYYY") }}</div>
             <div v-if="profile.friends" class="about-information"><i class="fas fa-user-friends" style="color: grey; font-size: 20px"></i>
               <strong>  {{ profile.friends.length }}</strong> Friends</div>
-            <div class="about-information">
+            <div v-show="profile.city" class="about-information">
               <i class="fas fa-map-marker-alt" style="color: grey; font-size: 20px"></i><strong>  Living in </strong>{{ profile.city }}, {{ profile.country }}</div>
             <hr>
             <div class="about-information"><strong>Profile Description</strong></div>
             <span>{{ profile.description }}</span>
       </div>
          <div v-else class="about-box">
-            <div class="about-information"><i class="fas fa-briefcase" style="color: grey; font-size: 20px"></i>
+            <div v-show="friendProfile.work" class="about-information"><i class="fas fa-briefcase" style="color: grey; font-size: 20px"></i>
             <strong>  Work at </strong>{{ friendProfile.work }}</div>
-            <div class="about-information"><i class="fas fa-birthday-cake" style="color: grey; font-size: 20px"></i>
+            <div v-if="friendProfile.birth" class="about-information"><i class="fas fa-birthday-cake" style="color: grey; font-size: 20px"></i>
             <strong>  Birth </strong>{{ friendProfile.birth | moment("MMMM Do YYYY") }}</div>
             <div v-if="friendProfile.friends" class="about-information"><i class="fas fa-user-friends" style="color: grey; font-size: 20px"></i>
             <strong>  {{ friendProfile.friends.length }}</strong> Friends</div>
-            <div class="about-information"><i class="fas fa-map-marker-alt" style="color: grey; font-size: 20px"></i>
+            <div v-show="friendProfile.city" class="about-information"><i class="fas fa-map-marker-alt" style="color: grey; font-size: 20px"></i>
             <strong>  Living in </strong>{{ friendProfile.city }}, {{ friendProfile.country }}</div>
             <hr>
             <div class="about-information"><strong>Profile Description</strong></div>
@@ -145,9 +145,6 @@ export default {
     var user = auth.currentUser
     if (user) {
       if (this.$route.params.id === user.displayName) {
-        await dbUsers.doc(user.displayName).get().then(doc => {
-          this.$store.dispatch('setProfileInfo', doc.data())
-        })
         this.userProfile = true
         this.getMyPosts()
       } else {
@@ -187,8 +184,8 @@ export default {
       next()
     }
   },
-  destroyed () {
-    this.resetState()
+  beforeDestroy () {
+    this.$store.state.posts = []
   }
 }
 </script>

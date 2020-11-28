@@ -17,10 +17,19 @@
   <h2>Create an Account</h2>
 <form class="sigin-form" @submit.prevent="submit">
     <input type="text" id="name-form" v-model="form.name" placeholder="Your Name">
-    <input type="text" id="username-form" v-model="form.username" placeholder="Your username">
+    <input type="text" id="username-form" v-model="form.username" placeholder="Your username" @focusout="checkUserName()">
+    <div v-show="checkUserNameVar" class="danger">
+  <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+  <strong>This username has been taken already</strong>
+</div>
+<div v-show="availableUsername" class="alert-available">
+  <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+  <strong>Available username!</strong>
+</div>
     <input type="email" id="email-form" v-model="form.email" placeholder="Email">
     <input type="password" id="password-form" v-model="form.password" placeholder="Password">
-    <button type="submit" id="signin-button">Sign Up</button>
+    <button type="submit" id="signin-button" :disabled="buttonDisabled">Sign Up</button>
+    <div class="forgot-password"><router-link :to="'/forgotpassword'">Forgot password?</router-link></div>
     <div v-show="success" class="alert">
   <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
   <strong>Account successfully created!</strong> Please log in.
@@ -31,13 +40,17 @@
 </template>
 
 <script>
-import { auth, db } from '../main'
+import { auth, db, dbUsers } from '../main'
 import Utils from '@/mixins/UtilsMixin'
+import { adminUser, adminPassword } from '@/mixins/FirebaseSettings'
 
 export default {
   mixins: [Utils],
   data () {
     return {
+      availableUsername: false,
+      buttonDisabled: false,
+      checkUserNameVar: false,
       success: false,
       user: {
         email: '',
@@ -52,6 +65,22 @@ export default {
     }
   },
   methods: {
+    async checkUserName () {
+      await auth.signInWithEmailAndPassword(adminUser, adminPassword).then(async () => {
+        await dbUsers.doc(this.form.username).get().then(doc => {
+          if (doc.data() === undefined) {
+            this.availableUsername = true
+            this.checkUserNameVar = false
+            this.buttonDisabled = false
+          } else {
+            this.availableUsername = false
+            this.checkUserNameVar = true
+            this.buttonDisabled = true
+          }
+        })
+      })
+      await auth.signOut()
+    },
     userLogin () {
       auth.signInWithEmailAndPassword(this.user.email, this.user.password)
         .then(() => {
@@ -85,6 +114,8 @@ export default {
           this.form.email = ''
           this.form.password = ''
           this.success = true
+          this.availableUsername = false
+          this.checkUserNameVar = false
         }).catch(err => {
           alert(this.error = err.message)
         })
@@ -177,6 +208,16 @@ export default {
   background-color: green;
   color: white;
 }
+.alert-available {
+    padding: 5px;
+  background-color: green;
+  color: white;
+}
+.danger {
+  padding: 5px;
+  background-color: red;
+  color: white;
+}
 
 .closebtn {
   margin-left: 15px;
@@ -191,5 +232,12 @@ export default {
 
 .closebtn:hover {
   color: black;
+}
+.forgot-password {
+  text-align: center;
+  font-weight: bold;
+}
+.forgot-password a {
+  text-decoration: none;
 }
 </style>

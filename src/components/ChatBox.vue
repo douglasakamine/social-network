@@ -1,10 +1,10 @@
 <template>
     <div class="chat-box">
-        <div class="box-messaging" ref="boxMessaging">
-                <div v-for="message in chat" :key="message.id" :class="getMessageUserClass(message.from)">
+        <div v-if="chat[currentChat]" class="box-messaging" ref="boxMessaging">
+                <div v-for="message in chat[currentChat].chat" :key="message.id" :class="getMessageUserClass(message.from)">
                     <div class="name-in-message">{{ message.name }} <span>says...</span></div>
                     <div class="message-content" v-html="message.content"></div>
-                    <div v-if="message.time" class="time">{{ message.time.seconds | moment("hh:mm") }}</div>
+                    <div v-if="message.time !== null" class="time">{{ message.time.seconds | moment("hh:mm") }}</div>
                     </div>
                 </div>
             <div class="typing-box">
@@ -26,16 +26,18 @@ export default {
   computed: {
     ...mapGetters({
       chat: 'getChat',
-      chatId: 'getCurrentChatId'
+      currentChat: 'getCurrentChat'
     })
   },
   methods: {
     sendMessage () {
-      dbChats.doc(this.chatId).collection('messages').doc().set({
-        content: event.target.children[0].value.replace(/\n\r?/g, '<br />'),
+      dbChats.doc(this.chat[this.currentChat].chatId).collection('messages').doc().set({
+        time: firebase.firestore.FieldValue.serverTimestamp(),
+        // content: event.target.children[0].value.replace(/\n\r?/g, '<br />'),
+        content: event.target.children[0].value,
         from: this.$store.state.profile.username,
         name: this.$store.state.profile.name,
-        time: firebase.firestore.FieldValue.serverTimestamp()
+        read: false
       })
       event.target.children[0].value = null
     },
@@ -45,11 +47,6 @@ export default {
       } else {
         return 'friend-class-message'
       }
-    },
-    getDate () {
-      var serverTime = firebase.firestore.FieldValue.serverTimestamp()
-      console.log(serverTime)
-      return serverTime
     },
     scrollToEnd () { // Put the message scroll bar at bottom
       var content = this.$refs.boxMessaging

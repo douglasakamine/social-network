@@ -1,6 +1,12 @@
-import { st, dbUsers, dbPosts } from '../main'
+import { mapGetters } from 'vuex'
+import { st, dbUsers, dbPosts, auth } from '../main'
 
 export default {
+  computed: {
+    ...mapGetters({
+      myUser: 'getProfileInfo'
+    })
+  },
   methods: {
     async uploadFile (rawFile) {
       await st.child(rawFile.name).put(rawFile)
@@ -37,7 +43,8 @@ export default {
       })
     },
     getFriendsPosts () {
-      dbUsers.doc(this.$store.state.profile.username).collection('friends')
+      var user = auth.currentUser
+      dbUsers.doc(user.displayName).collection('friends')
         .where('status', '==', 'friend')
         .get().then(querySnapshot => {
           querySnapshot.forEach(friend => {
@@ -53,7 +60,8 @@ export default {
         })
     },
     getMyPosts () {
-      dbPosts.where('username', '==', this.$store.getters.getProfileInfo.username)
+      var user = auth.currentUser
+      dbPosts.where('username', '==', user.displayName)
         .get().then(querySnapshot => {
           querySnapshot.forEach(doc => {
             var post = doc.data()
@@ -72,10 +80,9 @@ export default {
         ads: [],
         editProfileInfoButton: false,
         buttonAlbum: false,
+        chat: [],
         clickedPhoto: 0,
-        currentChat: [],
-        currentChatId: '',
-        messagingFriendList: []
+        currentChat: 0
       })
     }
   }

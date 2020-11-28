@@ -28,6 +28,9 @@ export default {
         this.$store.dispatch('setAdsToState', doc.data())
       })
     })
+  },
+  beforeDestroy () {
+    this.$store.state.ads = []
   }
 }
 </script>

@@ -7,6 +7,7 @@ import Profile from '../views/Profile.vue'
 import Login from '../views/Login.vue'
 import Photos from '../views/Photos.vue'
 import NotFound from '../components/NotFound.vue'
+import ForgotPassword from '../views/ForgotPassword.vue'
 import firebase from 'firebase'
 
 Vue.use(VueRouter)
@@ -47,6 +48,11 @@ const routes = [
     name: 'Photos',
     component: Photos,
     meta: { requiresAuth: true }
+  },
+  {
+    path: '/forgotpassword',
+    name: 'ForgotPassword',
+    component: ForgotPassword
   },
   {
     path: '*',

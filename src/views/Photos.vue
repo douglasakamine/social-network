@@ -137,10 +137,7 @@ export default {
       }
     }
   },
-  mixins: [Utils],
-  destroyed () {
-    this.resetState()
-  }
+  mixins: [Utils]
 }
 </script>
 

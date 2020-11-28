@@ -15,9 +15,9 @@ export default new Vuex.Store({
     editProfileInfoButton: false,
     buttonAlbum: false,
     clickedPhoto: 0,
-    currentChat: [],
-    currentChatId: '',
-    messagingFriendList: []
+    chat: [],
+    currentChat: 0,
+    notification: 0
   }, // State End
   getters: {
     getFeed (state) { // Get initial Feed
@@ -31,10 +31,13 @@ export default new Vuex.Store({
       return state.buttonAlbum
     },
     getChat (state) { // Return the current chat
-      return state.currentChat
+      return state.chat
     },
-    getCurrentChatId (state) {
-      return state.currentChatId
+    getNotification (state) {
+      return state.notification
+    },
+    getCurrentChat (state) {
+      return state.currentChat
     },
     getFriends (state) {
       return state.friends
@@ -50,9 +53,6 @@ export default new Vuex.Store({
     },
     getClickedPhoto (state) {
       return state.clickedPhoto
-    },
-    getMessagingFriendList (state) {
-      return state.messagingFriendList
     }
   }, // Getters End
   mutations: {
@@ -112,19 +112,19 @@ export default new Vuex.Store({
       state.profile.album.push(file)
     },
     setChat (state, chat) {
-      state.currentChat = chat
-    },
-    setCurrentChatId (state, id) {
-      state.currentChatId = id
-    },
-    setFriendListOnMessaging (state, data) {
-      state.messagingFriendList = data
+      state.chat = chat
     },
     addIntoArray (state, payload) {
       state.friends[payload.array] = payload.data
     },
     setDeleteButtonOnPhotos (state, payload) {
       Vue.set(state.profile.deleteHover, payload.photoIndex, payload.value)
+    },
+    setCurrentChat (state, index) {
+      state.currentChat = index
+    },
+    setNotification (state, num) {
+      state.notification = state.notification + num
     }
   }, // Mutations End
   actions: {
@@ -191,17 +191,17 @@ export default new Vuex.Store({
     setChat: ({ commit }, chat) => {
       commit('setChat', chat)
     },
-    setCurrentChatId: ({ commit }, id) => {
-      commit('setCurrentChatId', id)
-    },
-    setFriendListOnMessaging: ({ commit }, data) => {
-      commit('setFriendListOnMessaging', data)
-    },
     addIntoArray: ({ commit }, payload) => {
       commit('addIntoArray', payload)
     },
     setDeleteButtonOnPhotos: ({ commit }, payload) => {
       commit('setDeleteButtonOnPhotos', payload)
+    },
+    setCurrentChat: ({ commit }, index) => {
+      commit('setCurrentChat', index)
+    },
+    setNotification: ({ commit }, num) => {
+      commit('setNotification', num)
     }
   } // Actions End
 }) // Vuex End

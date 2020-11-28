@@ -8,7 +8,7 @@
       </div>
         <div class="div-input">
           <label for="birth">Birth</label>
-          <input id="birth" type="date" :value="profile.birth">
+          <input id="birth" type="date" :value="profile.birth" max="2999-12-31">
         </div>
         <div class="div-input">
           <label for="city">City</label>
